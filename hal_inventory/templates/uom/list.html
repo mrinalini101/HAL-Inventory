@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Units of Measure — HAL Koraput IMS</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    /* ======================
+       CSS Variables & Theming
+       ====================== */
+    :root {
+      --font-heading: 'Orbitron', sans-serif;
+      --font-body: 'Source Sans Pro', sans-serif;
+
+      /* Dark base */
+      --bg-base: #0d0d12;
+      --bg-panel: rgba(20,20,28,0.85);
+      --bg-hover: rgba(30,30,40,0.9);
+      --bg-button: rgba(0,191,255,0.2);
+      --border-color: rgba(255,255,255,0.2);
+      --text-primary: #e0e0e0;
+      --text-secondary: #a0a0a0;
+
+      /* Accent colors */
+      --accent-blue: #00bfff;
+      --accent-orange: #ff8800;
+      --accent-green: #28a745;
+      --accent-red: #dc3545;
+      --accent-hover: #33ffff;
+
+      --transition: 0.3s ease;
+      --blur: 8px;
+    }
+    html[data-theme="light"], body[data-theme="light"] {
+      --bg-base: #f5f7fa;
+      --bg-panel: rgba(255,255,255,0.9);
+      --bg-hover: rgba(245,245,250,0.9);
+      --bg-button: rgba(0,123,255,0.2);
+      --border-color: rgba(0,0,0,0.1);
+      --text-primary: #222222;
+      --text-secondary: #555555;
+
+      --accent-blue: #007bff;
+      --accent-orange: #ff6600;
+      --accent-green: #28a745;
+      --accent-red: #dc3545;
+      --accent-hover: #3399ff;
+    }
+
+    /* Global resets */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      position: relative;
+      transition: background var(--transition), color var(--transition);
+    }
+    a { color: inherit; text-decoration: none; transition: color var(--transition); }
+    a:hover { color: var(--accent-hover); }
+
+    /* Animated gradient background */
+    body::before {
+      content: "";
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(45deg, #0d0d12, #1a1a28, #0d0d12);
+      background-size: 400% 400%;
+      animation: bgAnim 30s ease infinite;
+      z-index: -2;
+    }
+    @keyframes bgAnim {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+    body::after {
+      content:"";
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 20px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 20px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Preloader */
+    #preloader {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: var(--bg-base);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    .spinner {
+      width: 3rem; height: 3rem;
+      border: 0.4rem solid rgba(255,255,255,0.2);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Header/Navbar */
+    header.site-header {
+      position: fixed; top:0; left:0; right:0;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(var(--blur));
+      padding: 0.75rem 1rem;
+      display: flex; align-items: center; z-index: 1000;
+    }
+    .site-header .brand {
+      display: flex; align-items: center;
+    }
+    .site-header .brand img {
+      height: 32px; margin-right: 0.5rem;
+    }
+    .site-header .brand span {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      color: var(--accent-blue);
+    }
+    .site-header nav {
+      margin-left: 2rem;
+      display: flex; gap: 1rem;
+    }
+    .site-header nav a {
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .site-header nav a.active,
+    .site-header nav a:hover {
+      background: var(--accent-blue);
+      color: var(--bg-base);
+    }
+    #themeToggle {
+      margin-left: auto;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+    }
+    #themeToggle:hover { color: var(--accent-hover); }
+
+    /* Main container */
+    main.container {
+      padding: 5rem 1rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .section-header h1 {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      color: var(--accent-orange);
+    }
+    .section-header .btn-add {
+      display: inline-flex; align-items: center;
+      background: var(--accent-green);
+      color: var(--bg-base);
+      padding: 0.5rem 1rem;
+      border: none; border-radius: 4px;
+      font-weight: 500;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .section-header .btn-add i { margin-right: 0.5rem; }
+    .section-header .btn-add:hover {
+      background: #33cc55;
+      transform: scale(1.05);
+    }
+
+    /* Cards grid for UOMs */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .uom-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      backdrop-filter: blur(var(--blur));
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+    .uom-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,191,255,0.3);
+      background: var(--bg-hover);
+    }
+    .uom-card .card-header {
+      padding: 0.75rem 1rem;
+      background: var(--accent-blue);
+      color: var(--bg-base);
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      text-align: center;
+    }
+    .uom-card .card-body {
+      flex:1;
+      padding: 1rem;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .uom-card .card-body .code {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: var(--accent-orange);
+    }
+    .uom-card .card-body .desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      text-align: center;
+      word-break: break-word;
+    }
+    .card-actions {
+      display: flex; gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border-color);
+      background: rgba(0,0,0,0.1);
+    }
+    .card-actions a,
+    .card-actions button {
+      flex:1;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0.4rem;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+      background: var(--bg-button);
+      color: var(--text-primary);
+    }
+    .card-actions a:hover,
+    .card-actions button:hover {
+      background: var(--accent-hover);
+      color: var(--bg-base);
+      transform: scale(1.05);
+    }
+    .card-actions form { margin:0; flex:1; }
+    .card-actions form button {
+      width:100%;
+      background: var(--accent-red);
+      color: var(--bg-base);
+    }
+    .card-actions form button:hover {
+      background: #ff5566;
+    }
+
+    /* Flash alerts */
+    .alert {
+      margin-bottom: 1rem;
+      border-radius: 4px;
+    }
+
+    /* Back-to-top */
+    #backToTop {
+      position: fixed; bottom:1rem; right:1rem;
+      width:2.5rem; height:2.5rem;
+      background: var(--accent-blue);
+      color:#fff;
+      border-radius:50%;
+      display:none; align-items:center; justify-content:center;
+      cursor:pointer; z-index:1000;
+      transition: background var(--transition), transform var(--transition);
+    }
+    #backToTop:hover {
+      background: var(--accent-hover);
+      transform: scale(1.1);
+    }
+
+    /* Footer */
+    footer.site-footer {
+      text-align:center;
+      padding:1rem;
+      font-size:0.9rem;
+      color: var(--text-secondary);
+      margin-top:2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Header/Navbar -->
+  <header class="site-header">
+    <div class="brand d-flex align-items-center">
+      <!-- Adjust href if needed -->
+      <a href="{{ url_for('admin.dashboard') }}" class="d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" alt="HAL Logo">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <nav>
+      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('uom.list_uom') }}" class="active">Units of Measure</a>
+      <!-- add more nav items if desired -->
+    </nav>
+    <div id="themeToggle"><i class="fas fa-moon"></i></div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-3">
+          {% for category, msg in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ msg }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="section-header">
+      <h1>Units of Measure</h1>
+      <a href="/uom/add" class="btn-add">
+        <i class="fas fa-plus-circle"></i> Add Unit
+      </a>
+    </div>
+
+    {% if uoms %}
+      <div class="cards-grid">
+        {% for u in uoms %}
+          <div class="uom-card">
+            <div class="card-header">Unit</div>
+            <div class="card-body">
+              <div class="code">{{ u.code }}</div>
+              <div class="desc">{{ u.description or '—' }}</div>
+            </div>
+            <div class="card-actions">
+              <a href="/uom/edit/{{ u.uom_id }}">
+                <i class="fas fa-edit"></i> Edit
+              </a>
+              <form action="/uom/delete/{{ u.uom_id }}" method="post"
+                    onsubmit="return confirm('Delete this unit?');">
+                <button type="submit">
+                  <i class="fas fa-trash-alt"></i> Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-center" style="color: var(--text-secondary); margin-top:2rem;">
+        No units defined. Click “Add Unit” to create one.
+      </p>
+    {% endif %}
+  </main>
+
+  <!-- Back-to-top Button -->
+  <div id="backToTop"><i class="fas fa-chevron-up"></i></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    &copy; {{ current_year or "2025" }} Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <!-- Bootstrap JS (for alerts) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Preloader hide
+    window.addEventListener('load', function(){
+      const pre = document.getElementById('preloader');
+      if(pre){
+        pre.style.opacity = '0';
+        setTimeout(()=> pre.remove(), 400);
+      }
+    });
+
+    // Theme Toggle
+    (function(){
+      const docEl = document.documentElement;
+      const toggle = document.getElementById('themeToggle');
+      if(!toggle) return;
+      const icon = toggle.querySelector('i');
+      const stored = localStorage.getItem('theme');
+      function applyTheme(theme){
+        docEl.setAttribute('data-theme', theme);
+        if(theme==='light'){
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        } else {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        }
+      }
+      if(stored==='light'){
+        applyTheme('light');
+      } else if(stored==='dark'){
+        applyTheme('dark');
+      } else if(window.matchMedia){
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark ? 'dark' : 'light');
+      } else {
+        applyTheme('dark');
+      }
+      toggle.addEventListener('click', ()=>{
+        const current = docEl.getAttribute('data-theme');
+        const next = current==='light' ? 'dark' : 'light';
+        applyTheme(next);
+        localStorage.setItem('theme', next);
+      });
+    })();
+
+    // Back-to-top Button
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', ()=>{
+      if(window.scrollY > 300){
+        backToTopBtn.style.display = 'flex';
+      } else {
+        backToTopBtn.style.display = 'none';
+      }
+    });
+    if(backToTopBtn){
+      backToTopBtn.addEventListener('click', ()=>{
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  </script>
+</body>
+</html>

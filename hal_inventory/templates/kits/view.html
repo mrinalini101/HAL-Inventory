@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kit {{ kit.kit_no }} — HAL Koraput IMS</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Source+Sans+Pro:wght@300;400;600&display=swap"
+    rel="stylesheet">
+  <!-- Font Awesome -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet">
+
+  <style>
+    /* ======================
+       CSS Variables & Theming
+       ====================== */
+    :root {
+      --font-heading: 'Orbitron', sans-serif;
+      --font-body: 'Source Sans Pro', sans-serif;
+
+      /* Dark base */
+      --bg-base-dark: #0d0d12;
+      --bg-panel-dark: rgba(20,20,28,0.85);
+      --bg-hover-dark: rgba(30,30,40,0.9);
+      --bg-button-dark: rgba(0,191,255,0.2);
+      --border-color-dark: rgba(255,255,255,0.2);
+      --text-primary-dark: #e0e0e0;
+      --text-secondary-dark: #a0a0a0;
+
+      /* Light variant (if toggled) */
+      --bg-base-light: #f5f7fa;
+      --bg-panel-light: rgba(255,255,255,0.9);
+      --bg-hover-light: rgba(245,245,250,0.9);
+      --bg-button-light: rgba(0,123,255,0.2);
+      --border-color-light: rgba(0,0,0,0.1);
+      --text-primary-light: #222222;
+      --text-secondary-light: #555555;
+
+      /* Accent colors */
+      --accent-blue: #00bfff;
+      --accent-lightblue: #3399ff;
+      --accent-hover: #33ffff;
+      --accent-green: #28a745;
+      --accent-red: #dc3545;
+
+      --transition: 0.3s ease;
+      --blur: 8px;
+
+      /* Layout */
+      --topbar-height: 60px;
+      --logo-height: 32px;
+      --border-radius: 6px;
+      --shadow-color: rgba(0,0,0,0.6);
+    }
+    html[data-theme="dark"], body[data-theme="dark"] {
+      --bg-base: var(--bg-base-dark);
+      --bg-panel: var(--bg-panel-dark);
+      --bg-hover: var(--bg-hover-dark);
+      --bg-button: var(--bg-button-dark);
+      --border-color: var(--border-color-dark);
+      --text-primary: var(--text-primary-dark);
+      --text-secondary: var(--text-secondary-dark);
+    }
+    html[data-theme="light"], body[data-theme="light"] {
+      --bg-base: var(--bg-base-light);
+      --bg-panel: var(--bg-panel-light);
+      --bg-hover: var(--bg-hover-light);
+      --bg-button: var(--bg-button-light);
+      --border-color: var(--border-color-light);
+      --text-primary: var(--text-primary-light);
+      --text-secondary: var(--text-secondary-light);
+    }
+
+    /* Global resets */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background var(--transition), color var(--transition);
+    }
+    a {
+      color: inherit; text-decoration: none;
+      transition: color var(--transition);
+    }
+    a:hover {
+      color: var(--accent-hover);
+    }
+    button {
+      font-family: var(--font-body);
+      cursor: pointer;
+    }
+
+    /* Animated gradient background */
+    body::before {
+      content: "";
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(45deg, #0d0d12, #1a1a28, #0d0d12);
+      background-size: 400% 400%;
+      animation: bgAnim 30s ease infinite;
+      z-index: -2;
+    }
+    @keyframes bgAnim {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+    body::after {
+      content:"";
+      position: fixed;top:0;left:0;right:0;bottom:0;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 20px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 20px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Preloader */
+    #preloader {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: var(--bg-base);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2000;
+    }
+    .spinner {
+      width: 3rem; height: 3rem;
+      border: 0.4rem solid rgba(255,255,255,0.2);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ======================
+       Topbar / Header
+       ====================== */
+    header.topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--topbar-height);
+      padding: 0 1rem;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 2px 4px var(--shadow-color);
+      transition: background var(--transition);
+    }
+    header.topbar .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    header.topbar .brand img {
+      height: var(--logo-height);
+    }
+    header.topbar .brand span {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      color: var(--accent-blue);
+    }
+    header.topbar nav {
+      display: flex; gap: 1rem;
+      margin-left: 2rem;
+    }
+    header.topbar nav a {
+      padding: 0.4rem 0.6rem;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      transition: background var(--transition), color var(--transition);
+    }
+    header.topbar nav a.active,
+    header.topbar nav a:hover {
+      background: var(--accent-blue);
+      color: var(--bg-base);
+    }
+    header.topbar .actions {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    header.topbar .actions button,
+    header.topbar .actions a {
+      background: none; border: none;
+      font-size: 1.2rem; color: var(--text-secondary);
+      transition: color var(--transition);
+    }
+    header.topbar .actions button:hover,
+    header.topbar .actions a:hover {
+      color: var(--accent-blue);
+    }
+
+    /* ======================
+       Main Content Area
+       ====================== */
+    main.container {
+      flex: 1;
+      padding: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    /* Flash messages */
+    .flash-container {
+      margin-bottom: 1rem;
+    }
+    .flash-container .alert {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 4px var(--shadow-color);
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    .flash-container .alert .btn-close {
+      background: none; border: none; font-size: 1rem;
+      color: var(--text-secondary); cursor: pointer;
+    }
+    .flash-container .alert .btn-close:hover {
+      color: var(--accent-blue);
+    }
+
+    /* Section header */
+    .section-header {
+      display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; margin-bottom: 1.5rem;
+    }
+    .section-header h1 {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      color: var(--accent-lightblue);
+      margin-bottom: 0.5rem;
+    }
+    .section-header .btn-back {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent-blue);
+      color: var(--bg-base);
+      padding: 0.5rem 1rem;
+      border: none; border-radius: var(--border-radius);
+      cursor: pointer; font-size: 0.9rem;
+      box-shadow: 0 2px 4px var(--shadow-color);
+      transition: background var(--transition), transform var(--transition);
+    }
+    .section-header .btn-back i {
+      font-size: 1.1rem;
+    }
+    .section-header .btn-back:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Kit Info Card */
+    .kit-info {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 4px var(--shadow-color);
+      transition: background var(--transition), box-shadow var(--transition);
+    }
+    .kit-info h2 {
+      font-family: var(--font-heading);
+      color: var(--accent-lightblue);
+      margin-bottom: 0.5rem;
+    }
+    .kit-info p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* Table: Contents */
+    .contents-table-container {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      overflow-x: auto;
+      box-shadow: 0 2px 4px var(--shadow-color);
+      margin-bottom: 1.5rem;
+      transition: background var(--transition), box-shadow var(--transition);
+    }
+    table.contents-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    table.contents-table thead {
+      background: var(--accent-blue);
+      color: #fff;
+    }
+    table.contents-table thead th {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    table.contents-table tbody tr {
+      background: var(--bg-panel);
+      transition: background var(--transition);
+    }
+    table.contents-table tbody tr:hover {
+      background: var(--bg-hover);
+    }
+    table.contents-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+    table.contents-table td.text-center {
+      text-align: center;
+    }
+
+    /* Add-to-Kit form */
+    .add-kit-form {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      padding: 1rem;
+      box-shadow: 0 2px 4px var(--shadow-color);
+      transition: background var(--transition), box-shadow var(--transition);
+      margin-bottom: 2rem;
+    }
+    .add-kit-form h3 {
+      font-family: var(--font-heading);
+      color: var(--accent-lightblue);
+      margin-bottom: 1rem;
+    }
+    .add-kit-form .form-group {
+      margin-bottom: 1rem;
+    }
+    .add-kit-form label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .add-kit-form input[type="text"],
+    .add-kit-form input[type="number"],
+    .add-kit-form select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      transition: border-color var(--transition);
+    }
+    .add-kit-form input:focus,
+    .add-kit-form select:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 4px var(--accent-blue);
+    }
+    .add-kit-form .btn-submit {
+      background: var(--accent-blue);
+      color: var(--bg-base);
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 0.95rem;
+      font-weight: 500;
+      box-shadow: 0 2px 4px var(--shadow-color);
+      transition: background var(--transition), transform var(--transition);
+    }
+    .add-kit-form .btn-submit:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+    .add-kit-form .btn-cancel {
+      margin-left: 0.5rem;
+      background: var(--text-secondary);
+      color: var(--bg-base);
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 0.95rem;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .add-kit-form .btn-cancel:hover {
+      background: var(--accent-red);
+      transform: translateY(-1px);
+    }
+
+    /* Back-to-top */
+    #backToTop {
+      position: fixed; bottom:1.5rem; right:1.5rem;
+      width:2.5rem; height:2.5rem;
+      background: var(--accent-blue);
+      color:#fff;
+      border-radius:50%;
+      display:none; align-items:center; justify-content:center;
+      cursor:pointer; z-index:1000;
+      transition: background var(--transition), transform var(--transition);
+    }
+    #backToTop:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Footer */
+    footer.site-footer {
+      text-align:center;
+      padding:1rem;
+      font-size:0.85rem;
+      color: var(--text-secondary);
+      background: var(--bg-panel);
+      border-top: 1px solid var(--border-color);
+      box-shadow: 0 -2px 4px var(--shadow-color);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader"><div class="spinner"></div></div>
+
+  <!-- Topbar / Header -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="{{ url_for('admin.dashboard') }}" class="d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" alt="HAL Logo">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <nav>
+      <a href="{{ url_for('kits.list_kits') }}">Kits</a>
+      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+      <!-- add other nav links if needed -->
+    </nav>
+    <div class="actions">
+      <!-- Theme toggle -->
+      <button id="themeToggle" title="Toggle theme"><i class="fas fa-moon"></i></button>
+      <!-- Logout icon -->
+      <a href="{{ url_for('auth.logout') }}" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="container">
+    <!-- Flash messages -->
+    <div class="flash-container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, msg in messages %}
+            <div class="alert alert-{{ category }}">
+              <span>{{ msg }}</span>
+              <button class="btn-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <!-- Section header -->
+    <div class="section-header">
+      <h1>Kit {{ kit.kit_no }} — {{ kit.kit_name }}</h1>
+      <a href="{{ url_for('kits.list_kits') }}" class="btn-back">
+        <i class="fas fa-arrow-left"></i> Back to Kits
+      </a>
+    </div>
+
+    <!-- Kit info -->
+    <div class="kit-info">
+      <h2>Details</h2>
+      <p><strong>Kit No:</strong> {{ kit.kit_no }}<br>
+         <strong>Name:</strong> {{ kit.kit_name }}<br>
+         <strong>Engine No:</strong> {{ kit.engine_no or '-' }}<br>
+         <strong>Created by:</strong> {{ kit.created_by or '-' }}<br>
+         <strong>Created at:</strong> {{ kit.created_at.strftime('%Y-%m-%d') if kit.created_at else '-' }}
+      </p>
+    </div>
+
+    <!-- Contents table -->
+    <div class="contents-table-container">
+      <table class="contents-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th class="text-center">Actual</th>
+            <th class="text-center">Issued</th>
+            <th class="text-center">Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in kit.contents %}
+          <tr>
+            <td>{{ item_map[c.item_id].name }}</td>
+            <td class="text-center">{{ c.qty_actual }}</td>
+            <td class="text-center">{{ c.qty_issued }}</td>
+            <td class="text-center">{{ c.bin_balance }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="text-center" style="color: var(--text-secondary); padding:1rem;">
+              No contents yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Add to Kit form for admin/manager -->
+    {% if current_user.role in ['admin','manager'] %}
+    <div class="add-kit-form">
+      <h3><i class="fas fa-plus-circle"></i> Add to Kit</h3>
+      <form method="post">
+        <div class="form-group">
+          <label for="item_id">Item</label>
+          <select name="item_id" id="item_id" required>
+            <option value="" disabled selected>-- select item --</option>
+            {% for it in items %}
+            <option value="{{ it.item_id }}">{{ it.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="qty_actual">Qty Actual</label>
+          <input type="number" step="0.01" name="qty_actual" id="qty_actual" required>
+        </div>
+        <div class="form-group">
+          <label for="nomen_code_vc">Nomen Code</label>
+          <input type="text" name="nomen_code_vc" id="nomen_code_vc">
+        </div>
+        <div class="form-group">
+          <label for="bin_balance">Bin Balance</label>
+          <input type="number" step="0.01" name="bin_balance" id="bin_balance">
+        </div>
+        <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> Add</button>
+        <a href="{{ url_for('kits.list_kits') }}" class="btn-cancel"><i class="fas fa-times"></i> Cancel</a>
+      </form>
+    </div>
+    {% endif %}
+  </main>
+
+  <!-- Back-to-top -->
+  <div id="backToTop"><i class="fas fa-chevron-up"></i></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    &copy; {{ current_year or "2025" }} Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Preloader hide
+    window.addEventListener('load', function(){
+      const pre = document.getElementById('preloader');
+      if(pre){
+        pre.style.opacity = '0';
+        setTimeout(()=> pre.remove(), 300);
+      }
+    });
+
+    // Theme Toggle
+    (function(){
+      const docEl = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const icon = btn.querySelector('i');
+      function applyTheme(theme){
+        docEl.setAttribute('data-theme', theme);
+        if(theme==='light'){
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        } else {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        }
+      }
+      const stored = localStorage.getItem('theme');
+      if(stored==='light') applyTheme('light');
+      else applyTheme('dark');
+      btn.addEventListener('click', ()=>{
+        const cur = docEl.getAttribute('data-theme');
+        const next = cur==='light'?'dark':'light';
+        applyTheme(next);
+        localStorage.setItem('theme', next);
+      });
+    })();
+
+    // Back-to-top behavior
+    const backBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', ()=>{
+      if(window.scrollY > 300) backBtn.style.display = 'flex';
+      else backBtn.style.display = 'none';
+    });
+    backBtn.addEventListener('click', ()=>{ window.scrollTo({top:0, behavior:'smooth'}); });
+  </script>
+</body>
+</html>

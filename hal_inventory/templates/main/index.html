@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HAL Koraput IMS</title>
+  <!-- Lux theme from Bootswatch -->
+  <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.1/dist/lux/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; }
+    .hero { background: #f8f9fa; padding: 4rem 2rem; border-radius: .5rem; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+      <!-- Absolute link back to home (/) -->
+      <a class="navbar-brand" href="/">
+        <img src="/static/img/hal-logo.png" height="30" alt="HAL Logo">
+        HAL IMS
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto">
+          <!-- Absolute routes to your blueprints -->
+          <li class="nav-item"><a class="nav-link" href="/auth/login">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/auth/register">Register</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="container">
+    <div class="hero mb-5">
+      <h1 class="display-4">Welcome to HAL Koraput IMS</h1>
+      <p class="lead">Your all-in-one Inventory & Order Management System</p>
+      <!-- Again, absolute URLs -->
+      <a href="/auth/login"  class="btn btn-lg btn-primary me-2">Login</a>
+      <a href="/auth/register" class="btn btn-lg btn-outline-primary">Register</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-light py-3">
+    <div class="container text-center text-muted small">
+      © 2025 Hindustan Aeronautics Ltd. — Koraput Division
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

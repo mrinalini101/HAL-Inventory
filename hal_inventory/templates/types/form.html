@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ action }} Inventory Type — HAL Koraput IMS</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Source+Code+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    /* ======================
+       CSS Variables & Theming
+       ====================== */
+    :root {
+      --font-heading: 'Orbitron', sans-serif;
+      --font-body: 'Source Code Pro', monospace;
+
+      /* Dark base */
+      --bg-base: #0c0c0f;
+      --bg-panel: rgba(25,25,30,0.8);
+      --bg-input: rgba(255,255,255,0.05);
+      --border-color: rgba(255,255,255,0.2);
+      --text-primary: #e0e0e0;
+      --text-secondary: #a0a0a0;
+
+      /* Neon accents */
+      --accent-blue: #00d8ff;
+      --accent-green: #00ff6a;
+      --accent-red: #ff3355;
+      --accent-hover: #33ffff;
+      --btn-text-dark: #0c0c0f;
+
+      --transition: 0.3s ease;
+    }
+    html[data-theme="light"], body[data-theme="light"] {
+      --bg-base: #f4f7fa;
+      --bg-panel: rgba(255,255,255,0.9);
+      --bg-input: rgba(0,0,0,0.03);
+      --border-color: rgba(0,0,0,0.1);
+      --text-primary: #222222;
+      --text-secondary: #555555;
+
+      --accent-blue: #007bff;
+      --accent-green: #28a745;
+      --accent-red: #dc3545;
+      --accent-hover: #3399ff;
+      --btn-text-dark: #ffffff;
+    }
+
+    /* ======================
+       Global Resets
+       ====================== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background var(--transition), color var(--transition);
+    }
+    a { color: inherit; text-decoration: none; transition: color var(--transition); }
+    a:hover { color: var(--accent-hover); }
+
+    /* Animated gradient background */
+    body::before {
+      content: "";
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(45deg, #0c0c0f, #1a1a22, #0c0c0f);
+      background-size: 400% 400%;
+      animation: bgMove 25s ease infinite;
+      z-index: -2;
+    }
+    @keyframes bgMove {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+    /* Subtle grid overlay */
+    body::after {
+      content: "";
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 20px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 20px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ======================
+       Preloader
+       ====================== */
+    #preloader {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: var(--bg-base);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.4s;
+    }
+    .spinner {
+      width: 3rem; height: 3rem;
+      border: 0.4rem solid rgba(255,255,255,0.2);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ======================
+       Header/Navbar
+       ====================== */
+    header.site-header {
+      position: fixed; top:0; left:0; right:0;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(8px);
+      padding: 0.75rem 1rem;
+      display: flex; align-items: center;
+      z-index: 1000;
+      transition: background var(--transition);
+    }
+    .site-header .brand {
+      display: flex; align-items: center;
+    }
+    .site-header .brand img {
+      height: 32px; margin-right: 0.5rem;
+    }
+    .site-header .brand span {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      color: var(--accent-blue);
+    }
+    .site-header nav {
+      margin-left: 2rem;
+      display: flex; gap: 1rem;
+    }
+    .site-header nav a {
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .site-header nav a.active,
+    .site-header nav a:hover {
+      background: var(--accent-blue);
+      color: var(--btn-text-dark);
+    }
+    #themeToggle {
+      margin-left: auto;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+    }
+    #themeToggle:hover { color: var(--accent-hover); }
+
+    /* ======================
+       Main Content
+       ====================== */
+    main.container {
+      padding: 5rem 1rem 2rem;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .panel:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    }
+    .panel h2 {
+      font-family: var(--font-heading);
+      color: var(--accent-blue);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    /* Flash alerts */
+    .alert {
+      margin-bottom: 1rem;
+      border-radius: 4px;
+    }
+
+    /* Form fields */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Buttons */
+    .btn-futuristic {
+      display: inline-flex; align-items: center;
+      background: var(--accent-green);
+      color: var(--btn-text-dark);
+      padding: 0.5rem 1rem;
+      border: none; border-radius: 4px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+      position: relative;
+      overflow: hidden;
+      margin-right: 0.5rem;
+    }
+    .btn-futuristic i { margin-right: 0.5rem; }
+    .btn-futuristic::before {
+      content: '';
+      position: absolute;
+      top:0; left:-100%;
+      width: 100%; height:100%;
+      background: rgba(255,255,255,0.2);
+      transform: skewX(-20deg);
+      transition: left 0.5s;
+    }
+    .btn-futuristic:hover {
+      background: var(--accent-hover);
+      transform: scale(1.05);
+    }
+    .btn-futuristic:hover::before {
+      left: 200%;
+    }
+    .btn-cancel {
+      display: inline-flex; align-items: center;
+      background: var(--accent-red);
+      color: var(--btn-text-dark);
+      padding: 0.5rem 1rem;
+      border: none; border-radius: 4px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .btn-cancel:hover {
+      background: #ff5566;
+      transform: scale(1.05);
+    }
+
+    /* Back-to-top */
+    #backToTop {
+      position: fixed; bottom: 1rem; right: 1rem;
+      width: 2.5rem; height: 2.5rem;
+      background: var(--accent-blue);
+      color: #fff;
+      border-radius: 50%;
+      display: none; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 1400;
+      transition: background var(--transition), transform var(--transition);
+    }
+    #backToTop:hover {
+      background: var(--accent-hover);
+      transform: scale(1.1);
+    }
+
+    /* Footer */
+    footer.site-footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Header/Navbar -->
+  <header class="site-header">
+    <div class="brand d-flex align-items-center">
+      <a href="{{ url_for('admin.dashboard') }}" class="d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" alt="HAL Logo">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <nav>
+      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('inventory_types.list_types') }}">Inventory Types</a>
+      <!-- add more links if desired -->
+    </nav>
+    <div id="themeToggle"><i class="fas fa-moon"></i></div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="panel">
+      <h2>{{ action }} Inventory Type</h2>
+
+      <!-- Flash messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-3">
+            {% for category, msg in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ msg }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="post">
+        <div class="form-group">
+          <label for="type_name" class="form-label">Type Name</label>
+          <input
+            type="text"
+            id="type_name"
+            name="type_name"
+            class="form-control"
+            value="{{ inv_type.type_name if inv_type else '' }}"
+            placeholder="Enter type name..."
+            required
+          >
+        </div>
+
+        <div class="d-flex justify-content-center mt-3">
+          <button type="submit" class="btn-futuristic">
+            <i class="fas fa-check-circle"></i> {{ action }}
+          </button>
+          <a href="{{ url_for('inventory_types.list_types') }}" class="btn-cancel">
+            <i class="fas fa-times-circle"></i> Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Back-to-top Button -->
+  <div id="backToTop"><i class="fas fa-chevron-up"></i></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    &copy; {{ current_year or "2025" }} Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <!-- Bootstrap JS (for alerts) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Preloader hide
+    window.addEventListener('load', function(){
+      const pre = document.getElementById('preloader');
+      if(pre){
+        pre.style.opacity = '0';
+        setTimeout(()=> pre.remove(), 400);
+      }
+    });
+
+    // Theme Toggle
+    (function(){
+      const docEl = document.documentElement;
+      const toggle = document.getElementById('themeToggle');
+      if(!toggle) return;
+      const icon = toggle.querySelector('i');
+      const stored = localStorage.getItem('theme');
+      function applyTheme(theme){
+        docEl.setAttribute('data-theme', theme);
+        if(theme==='light'){
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        } else {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        }
+      }
+      if(stored==='light'){
+        applyTheme('light');
+      } else if(stored==='dark'){
+        applyTheme('dark');
+      } else if(window.matchMedia){
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark ? 'dark' : 'light');
+      } else {
+        applyTheme('dark');
+      }
+      toggle.addEventListener('click', ()=>{
+        const current = docEl.getAttribute('data-theme');
+        const next = current==='light' ? 'dark' : 'light';
+        applyTheme(next);
+        localStorage.setItem('theme', next);
+      });
+    })();
+
+    // Back-to-top
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', ()=>{
+      if(window.scrollY > 300){
+        backToTopBtn.style.display = 'flex';
+      } else {
+        backToTopBtn.style.display = 'none';
+      }
+    });
+    if(backToTopBtn){
+      backToTopBtn.addEventListener('click', ()=>{
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  </script>
+</body>
+</html>

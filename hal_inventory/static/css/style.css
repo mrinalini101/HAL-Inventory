@@ -1,0 +1,141 @@
+/* Base */
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Header & Navigation */
+.site-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+.site-header .logo img {
+  max-height: 40px;
+  width: auto;
+}
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin-left: auto;
+  padding: 0;
+  margin: 0;
+}
+.main-nav a {
+  font-weight: 500;
+  color: #333;
+}
+.has-dropdown {
+  position: relative;
+}
+.has-dropdown .dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  list-style: none;
+  padding: 0.5rem 0;
+  margin: 0;
+}
+.has-dropdown:hover .dropdown {
+  display: block;
+}
+.dropdown li {
+  padding: 0.5rem 1rem;
+}
+.dropdown li a {
+  color: #333;
+}
+
+/* Main Content */
+.home-content {
+  padding: 2rem;
+}
+
+/* Hero / Products & Services */
+.products-services h2,
+.hal-gallery h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.grid-3 .card {
+  background: #f4f4f4;
+  /* allow cards to size to content now */
+  height: auto;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.grid-3 .card img {
+  max-width: 100%;
+  height: auto;
+  max-height: 120px;
+  object-fit: cover;
+}
+
+/* HAL Gallery */
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+.grid-4 img {
+  width: 100%;
+  max-height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #333;
+  border-radius: 4px;
+  display: inline-block;
+  margin: 0 .5rem;
+}
+.primary {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+/* Tables (for admin/user lists, etc.) */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+table th,
+table td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+/* Footer */
+.site-footer {
+  text-align: center;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-top: 1px solid #ddd;
+  margin-top: 2rem;
+  position: relative;
+}

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ action }} Unit of Measure — HAL Koraput IMS</title>
+
+  <!-- Google Fonts: Monospaced + Sans -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    /* ======================
+       CSS Variables & Theming
+       ====================== */
+    :root {
+      --font-mono: 'Roboto Mono', monospace;
+      --font-body: 'Source Sans Pro', sans-serif;
+
+      /* Dark mode base */
+      --bg-base-dark: #0e0e12;
+      --bg-panel-dark: rgba(18,18,24,0.8);
+      --bg-hover-dark: rgba(28,28,36,0.9);
+      --text-light: #e0e0e0;
+      --text-muted-light: #a0a0a0;
+
+      /* Light mode base */
+      --bg-base-light: #f4f5f7;
+      --bg-panel-light: rgba(255,255,255,0.9);
+      --bg-hover-light: rgba(245,245,248,0.9);
+      --text-dark: #222222;
+      --text-muted-dark: #555555;
+
+      /* Accent colors */
+      --accent-primary: #0091EA; /* bright blue */
+      --accent-secondary: #FF6D00; /* orange */
+      --accent-success: #00C853;
+      --accent-warning: #FFD600;
+      --accent-danger: #D50000;
+
+      --transition: 0.3s ease;
+      --grid-color-dark: rgba(255,255,255,0.05);
+      --grid-color-light: rgba(0,0,0,0.05);
+    }
+    html[data-theme="dark"], body[data-theme="dark"] {
+      --bg-base: var(--bg-base-dark);
+      --bg-panel: var(--bg-panel-dark);
+      --bg-hover: var(--bg-hover-dark);
+      --text-primary: var(--text-light);
+      --text-muted: var(--text-muted-light);
+      --grid-color: var(--grid-color-dark);
+    }
+    html[data-theme="light"], body[data-theme="light"] {
+      --bg-base: var(--bg-base-light);
+      --bg-panel: var(--bg-panel-light);
+      --bg-hover: var(--bg-hover-light);
+      --text-primary: var(--text-dark);
+      --text-muted: var(--text-muted-dark);
+      --grid-color: var(--grid-color-light);
+    }
+
+    /* Global resets */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      position: relative;
+      transition: background var(--transition), color var(--transition);
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; transition: color var(--transition); }
+    a:hover { color: var(--accent-primary); }
+
+    /* Blueprint grid overlay */
+    body::before {
+      content: "";
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    /* Subtle gradient background */
+    body::after {
+      content: "";
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg,
+        rgba(0,0,0,0.2) 0%,
+        rgba(0,0,0,0.0) 50%,
+        rgba(0,0,0,0.2) 100%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Preloader */
+    #preloader {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: var(--bg-base);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    .spinner {
+      width: 3rem; height: 3rem;
+      border: 0.4rem solid rgba(255,255,255,0.2);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Header/Navbar */
+    header.site-header {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--text-muted);
+      backdrop-filter: blur(6px);
+      padding: 0.75rem 1rem;
+      display: flex; align-items: center; z-index: 1000;
+    }
+    .site-header .brand {
+      display: flex; align-items: center;
+    }
+    .site-header .brand img {
+      height: 32px; margin-right: 0.5rem;
+    }
+    .site-header .brand span {
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+      color: var(--accent-primary);
+    }
+    .site-header nav {
+      margin-left: 2rem;
+      display: flex; gap: 1rem;
+    }
+    .site-header nav a {
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .site-header nav a.active,
+    .site-header nav a:hover {
+      background: var(--accent-primary);
+      color: var(--bg-base);
+    }
+    #themeToggle {
+      margin-left: auto;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color var(--transition);
+    }
+    #themeToggle:hover { color: var(--accent-primary); }
+
+    /* Main container */
+    main.container {
+      padding: 5rem 1rem 2rem;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .form-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--text-muted);
+      border-radius: 10px;
+      backdrop-filter: blur(6px);
+      padding: 2rem 1.5rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      transition: transform var(--transition), background var(--transition);
+    }
+    .form-card:hover {
+      transform: translateY(-3px);
+      background: var(--bg-hover);
+    }
+    .form-header {
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      color: var(--accent-secondary);
+      margin-bottom: 1.25rem;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    /* Form elements */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+    .form-group input[type="text"] {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--text-muted);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      transition: border-color var(--transition), background var(--transition);
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .btn-submit {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--accent-primary);
+      color: var(--bg-base);
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+      font-family: var(--font-mono);
+    }
+    .btn-submit i {
+      margin-right: 0.5rem;
+    }
+    .btn-submit:hover {
+      background: #0081c9;
+      transform: scale(1.05);
+    }
+    .btn-cancel {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--accent-secondary);
+      color: var(--bg-base);
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+      margin-left: 0.75rem;
+      font-family: var(--font-mono);
+    }
+    .btn-cancel:hover {
+      background: #e65c00;
+      transform: scale(1.05);
+    }
+
+    /* Flash alerts */
+    .alert {
+      margin-bottom: 1rem;
+      border-radius: 4px;
+    }
+
+    /* Back-to-top */
+    #backToTop {
+      position: fixed; bottom:1rem; right:1rem;
+      width:2.5rem; height:2.5rem;
+      background: var(--accent-primary);
+      color:#fff;
+      border-radius:50%;
+      display:none; align-items:center; justify-content:center;
+      cursor:pointer; z-index:1000;
+      transition: background var(--transition), transform var(--transition);
+    }
+    #backToTop:hover {
+      background: #0081c9;
+      transform: scale(1.1);
+    }
+
+    /* Footer */
+    footer.site-footer {
+      text-align:center;
+      padding:1rem;
+      font-size:0.9rem;
+      color: var(--text-muted);
+      margin-top:2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Header/Navbar -->
+  <header class="site-header">
+    <div class="brand d-flex align-items-center">
+      <a href="/admin/dashboard" class="d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" alt="HAL Logo">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <nav>
+      <a href="/admin/dashboard">Dashboard</a>
+      <a href="/uom" class="active">Units of Measure</a>
+    </nav>
+    <div id="themeToggle"><i class="fas fa-moon"></i></div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-3">
+          {% for category, msg in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ msg }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="form-card">
+      <div class="form-header">{{ action }} Unit of Measure</div>
+      <form method="post">
+        <div class="form-group">
+          <label for="code">Code</label>
+          <input id="code" name="code" type="text"
+                 value="{{ uom.code if uom else '' }}"
+                 placeholder="e.g. KG, L, PCS..." required>
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input id="description" name="description" type="text"
+                 value="{{ uom.description if uom else '' }}"
+                 placeholder="Optional description">
+        </div>
+        <div style="text-align: center; margin-top: 1.5rem;">
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-check-circle"></i> {{ action }}
+          </button>
+          <a href="/uom" class="btn-cancel">
+            <i class="fas fa-times-circle"></i> Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Back-to-top Button -->
+  <div id="backToTop"><i class="fas fa-chevron-up"></i></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    &copy; {{ current_year or "2025" }} Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <!-- Bootstrap JS (for alert dismiss) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Preloader hide
+    window.addEventListener('load', function(){
+      const pre = document.getElementById('preloader');
+      if(pre){
+        pre.style.opacity = '0';
+        setTimeout(()=> pre.remove(), 400);
+      }
+    });
+
+    // Theme Toggle
+    (function(){
+      const docEl = document.documentElement;
+      const toggle = document.getElementById('themeToggle');
+      if(!toggle) return;
+      const icon = toggle.querySelector('i');
+      const stored = localStorage.getItem('theme');
+      function applyTheme(theme){
+        docEl.setAttribute('data-theme', theme);
+        if(theme==='light'){
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        } else {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        }
+      }
+      if(stored==='light'){
+        applyTheme('light');
+      } else if(stored==='dark'){
+        applyTheme('dark');
+      } else if(window.matchMedia){
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark ? 'dark' : 'light');
+      } else {
+        applyTheme('dark');
+      }
+      toggle.addEventListener('click', ()=>{
+        const current = docEl.getAttribute('data-theme');
+        const next = current==='light' ? 'dark' : 'light';
+        applyTheme(next);
+        localStorage.setItem('theme', next);
+      });
+    })();
+
+    // Back-to-top Button
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', ()=>{
+      if(window.scrollY > 300){
+        backToTopBtn.style.display = 'flex';
+      } else {
+        backToTopBtn.style.display = 'none';
+      }
+    });
+    if(backToTopBtn){
+      backToTopBtn.addEventListener('click', ()=>{
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  </script>
+</body>
+</html>

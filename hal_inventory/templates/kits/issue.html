@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Issue Kit {{kit.kit_no}}</title>
+<link rel="stylesheet" href="/static/css/style.css"></head>
+<body>
+  <header class="site-header">…</header>
+  <main class="home-content">
+    <h2>Issue Kit {{ kit.kit_no }}</h2>
+    <form method="post">
+      <table>
+        <thead><tr><th>Item</th><th>Balance</th><th>Issue Qty</th></tr></thead>
+        <tbody>
+          {% for c in kit.contents %}
+          <tr>
+            <td>{{ c.item.name }}</td>
+            <td>{{ c.bin_balance }}</td>
+            <td>
+              <input type="number" step="0.01"
+                     name="issue_{{ c.id }}"
+                     max="{{ c.bin_balance }}"
+                     value="0">
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button type="submit">Issue</button>
+      <a href="/kits">Cancel</a>
+    </form>
+  </main>
+  <footer class="site-footer">…</footer>
+</body>
+</html>

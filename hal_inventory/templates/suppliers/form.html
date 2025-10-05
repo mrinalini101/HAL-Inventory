@@ -1,0 +1,116 @@
+{# templates/suppliers/form.html #}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ action }} Supplier — HAL Koraput IMS</title>
+  <!-- Bootswatch Lux Theme -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.1/dist/lux/bootstrap.min.css"
+    rel="stylesheet">
+  <style>
+    body { background: #f5f5f5; }
+    .card { border: none; border-radius: .5rem; }
+    .btn-primary { background-color: #007a33; border-color: #007a33; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('admin.dashboard') }}">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}"
+             height="30" alt="HAL IMS">
+        HAL IMS
+      </a>
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navMain"
+              aria-controls="navMain"
+              aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+              <i class="fas fa-home me-1"></i>Home
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- FORM CARD -->
+  <div class="container">
+    <div class="card shadow-sm mx-auto" style="max-width: 600px;">
+      <div class="card-body">
+        <h2 class="card-title text-center mb-4">{{ action }} Supplier</h2>
+        <form method="post" action="">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name *</label>
+            <input type="text"
+                   class="form-control"
+                   id="name"
+                   name="name"
+                   value="{{ supplier.name if supplier else '' }}"
+                   required>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="city" class="form-label">City</label>
+              <input type="text"
+                     class="form-control"
+                     id="city"
+                     name="city"
+                     value="{{ supplier.city or '' }}">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="state" class="form-label">State</label>
+              <input type="text"
+                     class="form-control"
+                     id="state"
+                     name="state"
+                     value="{{ supplier.state or '' }}">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="phone" class="form-label">Phone</label>
+              <input type="text"
+                     class="form-control"
+                     id="phone"
+                     name="phone"
+                     value="{{ supplier.phone or '' }}">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email"
+                     class="form-control"
+                     id="email"
+                     name="email"
+                     value="{{ supplier.email or '' }}">
+            </div>
+          </div>
+          <div class="d-flex justify-content-center mt-4">
+            <button type="submit" class="btn btn-primary me-2">{{ action }}</button>
+            <a href="{{ url_for('suppliers.list_suppliers') }}"
+               class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOTSTRAP & ICONS -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js">
+  </script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js">
+  </script>
+</body>
+</html>

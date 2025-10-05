@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage Categories – HAL Koraput</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <!-- Orbitron for headings, Roboto for body -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    /* ======================
+       CSS Variables & Theming
+       ====================== */
+    :root {
+      --font-sans: 'Roboto', sans-serif;
+      --font-heading: 'Orbitron', sans-serif;
+
+      /* Dark factory theme (default) */
+      --dark-bg: #121214;          /* nearly black */
+      --dark-panel: #1e1e22;       /* dark grey */
+      --dark-border: #2a2a30;
+      --dark-shadow: rgba(0, 0, 0, 0.7);
+      --text-light: #e0e0e0;
+      --text-muted: #8a8a8a;
+
+      /* Light theme fallback */
+      --light-bg: #f0f2f5;
+      --light-panel: #ffffff;
+      --light-border: #d1d1d1;
+      --light-shadow: rgba(0, 0, 0, 0.1);
+      --text-dark: #222222;
+      --text-muted-light: #555555;
+
+      /* Accent colors */
+      --accent-primary: #e31b23;   /* vivid crimson */
+      --accent-secondary: #17c3b2; /* teal accent for variety */
+      --accent-hover: #c1171f;     /* darker crimson on hover */
+      --btn-text: #ffffff;
+
+      /* Background grid overlay */
+      --grid-color: rgba(255,255,255,0.03);
+
+      --radius: 0.5rem;
+      --transition: 0.3s;
+    }
+    /* Default to dark theme */
+    html[data-theme="dark"], body[data-theme="dark"] {
+      --bg-base: var(--dark-bg);
+      --panel-bg: var(--dark-panel);
+      --border-color: var(--dark-border);
+      --shadow-color: var(--dark-shadow);
+      --text-primary: var(--text-light);
+      --text-secondary: var(--text-muted);
+      --btn-bg: var(--accent-primary);
+      --btn-bg-hover: var(--accent-hover);
+      --accent-color: var(--accent-primary);
+      --grid-overlay: var(--grid-color);
+    }
+    /* Light theme override */
+    html[data-theme="light"], body[data-theme="light"] {
+      --bg-base: var(--light-bg);
+      --panel-bg: var(--light-panel);
+      --border-color: var(--light-border);
+      --shadow-color: var(--light-shadow);
+      --text-primary: var(--text-dark);
+      --text-secondary: var(--text-muted-light);
+      --btn-bg: var(--accent-secondary);
+      --btn-bg-hover: #14948e;
+      --accent-color: var(--accent-secondary);
+      --grid-overlay: rgba(0,0,0,0.03);
+    }
+
+    /* ======================
+       Global Resets
+       ====================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background var(--transition), color var(--transition);
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    a:hover {
+      color: var(--accent-color);
+    }
+    h2 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      color: var(--accent-color);
+      text-align: center;
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* ======================
+       Background grid overlay (futuristic)
+       ====================== */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        linear-gradient(var(--grid-overlay) 1px, transparent 1px) 0 0 / 20px 20px,
+        linear-gradient(90deg, var(--grid-overlay) 1px, transparent 1px) 0 0 / 20px 20px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ======================
+       Preloader
+       ====================== */
+    #preloader {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-base);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.4s;
+    }
+    .spinner-pre {
+      width: 3rem; height: 3rem;
+      border: 0.4rem solid var(--border-color);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ======================
+       Header / Navbar
+       ====================== */
+    header.site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 2px 6px var(--shadow-color);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+      transition: background var(--transition), box-shadow var(--transition);
+    }
+    .site-header .brand {
+      display: flex;
+      align-items: center;
+    }
+    .site-header .brand img {
+      height: 32px;
+      margin-right: 0.5rem;
+      border-radius: 4px;
+    }
+    .site-header .brand span {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      color: var(--accent-color);
+    }
+    .site-header .nav-links {
+      margin-left: 2rem;
+      display: flex;
+      gap: 1rem;
+    }
+    .site-header .nav-links a {
+      padding: 0.4rem 0.6rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+    }
+    .site-header .nav-links a.active,
+    .site-header .nav-links a:hover {
+      background: var(--accent-color);
+      color: var(--btn-text);
+    }
+    #themeToggle {
+      margin-left: auto;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+    }
+    #themeToggle:hover {
+      color: var(--accent-color);
+    }
+
+    /* ======================
+       Main Content
+       ====================== */
+    main.home-content {
+      padding: 5rem 1rem 2rem; /* leave space for fixed header */
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px var(--shadow-color);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .panel:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px var(--shadow-color);
+    }
+
+    /* Flash messages */
+    .alert {
+      margin-bottom: 1rem;
+      border-radius: var(--radius);
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .btn.primary {
+      display: inline-flex;
+      align-items: center;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .btn.primary i {
+      margin-right: 0.5rem;
+    }
+    .btn.primary:hover {
+      background: var(--btn-bg-hover);
+      transform: scale(1.05);
+    }
+    .search-container {
+      flex: 1 1 200px;
+      text-align: right;
+    }
+    .search-container input {
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      width: 100%;
+      max-width: 250px;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .search-container input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    /* ======================
+       Table
+       ====================== */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-sans);
+    }
+    thead {
+      background: var(--accent-color);
+    }
+    thead th {
+      padding: 0.75rem 1rem;
+      color: #fff;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid var(--border-color);
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border-color);
+      transition: background var(--transition);
+    }
+    tbody tr:hover {
+      background: var(--bg-base);
+    }
+    tbody td {
+      padding: 0.75rem 1rem;
+      color: var(--text-primary);
+    }
+    .cell-name {
+      font-weight: 500;
+    }
+    /* Action links/buttons */
+    .action-link {
+      color: var(--accent-primary);
+      margin-right: 0.5rem;
+      font-size: 0.9rem;
+      transition: color var(--transition), transform var(--transition);
+    }
+    .action-link:hover {
+      color: var(--accent-secondary);
+      transform: scale(1.1);
+    }
+    .action-btn-delete {
+      background: transparent;
+      border: none;
+      color: #e74c3c;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: color var(--transition), transform var(--transition);
+    }
+    .action-btn-delete:hover {
+      color: #c0392b;
+      transform: scale(1.1);
+    }
+
+    /* Pagination */
+    .pagination-container {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    .pagination {
+      list-style: none;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .pagination .page-item {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: background var(--transition);
+    }
+    .pagination .page-item.disabled { opacity: 0.5; }
+    .pagination .page-item.active {
+      background: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+    .pagination .page-link {
+      display: block;
+      padding: 0.4rem 0.75rem;
+      color: inherit;
+      cursor: pointer;
+    }
+    .pagination .page-item.active .page-link {
+      color: #fff;
+    }
+    .pagination .page-item:not(.active):hover .page-link {
+      background: var(--bg-base);
+    }
+
+    /* Back-to-top */
+    #backToTop {
+      position: fixed;
+      bottom: 1rem; right: 1rem;
+      width: 2.5rem; height: 2.5rem;
+      background: var(--accent-color);
+      color: #fff;
+      border-radius: 50%;
+      display: none; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 1400;
+      transition: background var(--transition), transform var(--transition);
+    }
+    #backToTop:hover {
+      background: var(--btn-bg-hover);
+      transform: scale(1.1);
+    }
+
+    /* Footer */
+    footer.site-footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="spinner-pre"></div>
+  </div>
+
+  <!-- Header/Navbar -->
+  <header class="site-header">
+    <div class="brand d-flex align-items-center">
+      <a href="/admin/dashboard" class="d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" alt="HAL Logo">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <nav class="nav-links">
+      <!-- same nav as other pages; mark active accordingly -->
+      <a href="/admin/dashboard">Dashboard</a>
+      <a href="/categories" class="active">Categories</a>
+      <a href="/items">Items</a>
+      <!-- add more links here -->
+    </nav>
+    <div id="themeToggle"><i class="fas fa-moon"></i></div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="home-content">
+    <div class="panel">
+      <h2>Material Categories</h2>
+
+      <!-- Flash messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-3">
+            {% for category, msg in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ msg }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- Controls -->
+      <div class="controls">
+        <a href="/categories/add" class="btn primary">
+          <i class="fas fa-plus"></i> Add Category
+        </a>
+        <!-- Optional search -->
+        <!--
+        <div class="search-container">
+          <input type="text" id="searchInput" placeholder="Search categories...">
+        </div>
+        -->
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            {% for cat in categories %}
+            <tr>
+              <td class="cell-name">{{ cat.name }}</td>
+              <td>{{ cat.description or '-' }}</td>
+              <td>
+                <a href="/categories/edit/{{ cat.category_id }}" class="action-link">
+                  <i class="fas fa-edit"></i> Edit
+                </a>
+                <form action="/categories/delete/{{ cat.category_id }}" method="post" style="display:inline">
+                  <button type="submit" class="action-btn-delete"
+                          onclick="return confirm('Delete this category?');">
+                    <i class="fas fa-trash-alt"></i> Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+            {% if categories|length == 0 %}
+            <tr>
+              <td colspan="3" class="text-center" style="padding: 1rem 0; color: var(--text-secondary);">
+                No categories found.
+              </td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination (if provided) -->
+      {% if pagination is defined %}
+      <nav class="pagination-container" aria-label="Category pagination">
+        <ul class="pagination">
+          {# Example structure:
+          <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('categories.list_categories', page=pagination.prev_num) }}">Prev</a>
+          </li>
+          {% for p in pagination.iter_pages() %}
+            {% if p %}
+              {% if p == pagination.page %}
+                <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+              {% else %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('categories.list_categories', page=p) }}">{{ p }}</a></li>
+              {% endif %}
+            {% else %}
+              <li class="page-item disabled"><span class="page-link">…</span></li>
+            {% endif %}
+          {% endfor %}
+          <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('categories.list_categories', page=pagination.next_num) }}">Next</a>
+          </li>
+          #}
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+  </main>
+
+  <!-- Back-to-top -->
+  <div id="backToTop"><i class="fas fa-chevron-up"></i></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    &copy; {{ current_year or "" }} Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <!-- Optional Bootstrap JS if needed for components -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Preloader hide
+    window.addEventListener('load', function(){
+      const pre = document.getElementById('preloader');
+      if(pre){
+        pre.style.opacity = '0';
+        setTimeout(()=> pre.remove(), 400);
+      }
+    });
+
+    // Theme Toggle
+    (function(){
+      const docEl = document.documentElement;
+      const toggle = document.getElementById('themeToggle');
+      if(!toggle) return;
+      const icon = toggle.querySelector('i');
+      const stored = localStorage.getItem('theme');
+      function applyTheme(theme){
+        docEl.setAttribute('data-theme', theme);
+        if(theme==='dark'){
+          icon.classList.remove('fa-moon'); icon.classList.add('fa-sun');
+        } else {
+          icon.classList.remove('fa-sun'); icon.classList.add('fa-moon');
+        }
+      }
+      if(stored==='light'){
+        applyTheme('light');
+      } else if(stored==='dark'){
+        applyTheme('dark');
+      } else if(window.matchMedia){
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark ? 'dark' : 'light');
+      } else {
+        applyTheme('dark');
+      }
+      toggle.addEventListener('click', ()=>{
+        const current = docEl.getAttribute('data-theme');
+        const next = current==='light' ? 'dark' : 'light';
+        applyTheme(next);
+        localStorage.setItem('theme', next);
+      });
+    })();
+
+    // Back-to-top Button
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', ()=>{
+      if(window.scrollY > 300){
+        backToTopBtn.style.display = 'flex';
+      } else {
+        backToTopBtn.style.display = 'none';
+      }
+    });
+    if(backToTopBtn){
+      backToTopBtn.addEventListener('click', ()=>{
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    // Optional Search (commented out)
+    /*
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const searchInput = document.getElementById('searchInput');
+      if(searchInput){
+        searchInput.addEventListener('input', function(){
+          const filter = this.value.trim().toLowerCase();
+          const rows = document.querySelectorAll('#tableBody tr');
+          rows.forEach(row=>{
+            const cell = row.querySelector('.cell-name');
+            row.style.display = cell && cell.textContent.trim().toLowerCase().includes(filter) ? '' : 'none';
+          });
+        });
+      }
+    });
+    */
+  </script>
+</body>
+</html>

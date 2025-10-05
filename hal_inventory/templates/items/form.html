@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ action }} Item — HAL Koraput IMS</title>
+  <!-- Bootswatch Lux theme -->
+  <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.1/dist/lux/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('admin.dashboard') }}">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" height="30" alt="HAL IMS">
+        HAL IMS
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain"
+              aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto">
+          <!-- Home button -->
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.dashboard') }}">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+          <!-- Logout button -->
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.logout') }}">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2 class="mb-4">{{ action }} Item</h2>
+    <form method="post"
+          action="{% if item %}{{ url_for('items.edit_item', item_id=item.item_id) }}{% else %}{{ url_for('items.add_item') }}{% endif %}">
+      <!-- Material Code -->
+      <div class="mb-3">
+        <label for="mat_code" class="form-label">Material Code</label>
+        <input type="text"
+               id="mat_code"
+               name="mat_code"
+               class="form-control"
+               required
+               value="{{ item.mat_code if item else '' }}">
+      </div>
+
+      <!-- Name -->
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text"
+               id="name"
+               name="name"
+               class="form-control"
+               required
+               value="{{ item.name if item else '' }}">
+      </div>
+
+      <!-- Description -->
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea id="description"
+                  name="description"
+                  class="form-control"
+                  rows="3">{{ item.description if item else '' }}</textarea>
+      </div>
+
+      <!-- Category -->
+      <div class="mb-3">
+        <label for="category_id" class="form-label">Category</label>
+        <select id="category_id"
+                name="category_id"
+                class="form-select"
+                required>
+          <option value="" disabled{% if not item %} selected{% endif %}>-- choose a category --</option>
+          {% for cat in categories %}
+          <option value="{{ cat.category_id }}"
+                  {% if item and item.category_id == cat.category_id %}selected{% endif %}>
+            {{ cat.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Supplier -->
+      <div class="mb-3">
+        <label for="supplier_id" class="form-label">Supplier</label>
+        <select id="supplier_id"
+                name="supplier_id"
+                class="form-select"
+                required>
+          <option value="" disabled{% if not item %} selected{% endif %}>-- choose a supplier --</option>
+          {% for sup in suppliers %}
+          <option value="{{ sup.supplier_id }}"
+                  {% if item and item.supplier_id == sup.supplier_id %}selected{% endif %}>
+            {{ sup.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Inventory Type -->
+      <div class="mb-3">
+        <label for="inv_type_id" class="form-label">Inventory Type</label>
+        <select id="inv_type_id"
+                name="inv_type_id"
+                class="form-select"
+                required>
+          <option value="" disabled{% if not item %} selected{% endif %}>-- choose a type --</option>
+          {% for t in inv_types %}
+          <option value="{{ t.inv_type_id }}"
+                  {% if item and item.inv_type_id == t.inv_type_id %}selected{% endif %}>
+            {{ t.type_name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- UoM -->
+      <div class="mb-3">
+        <label for="uom_id" class="form-label">Unit of Measure</label>
+        <select id="uom_id"
+                name="uom_id"
+                class="form-select"
+                required>
+          <option value="" disabled{% if not item %} selected{% endif %}>-- choose a unit --</option>
+          {% for u in uoms %}
+          <option value="{{ u.uom_id }}"
+                  {% if item and item.uom_id == u.uom_id %}selected{% endif %}>
+            {{ u.code }}{% if u.description %} ({{ u.description }}){% endif %}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Unit Price, ROL, Stock Qty -->
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label for="unit_price" class="form-label">Unit Price</label>
+          <input type="number"
+                 step="0.01"
+                 min="0"
+                 id="unit_price"
+                 name="unit_price"
+                 class="form-control"
+                 value="{{ item.unit_price if item else '' }}">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="rol" class="form-label">Reorder Level</label>
+          <input type="number"
+                 step="0.01"
+                 min="0"
+                 id="rol"
+                 name="rol"
+                 class="form-control"
+                 value="{{ item.rol if item else '' }}">
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="stock_qty" class="form-label">Stock Quantity</label>
+          <input type="number"
+                 step="0.01"
+                 min="0"
+                 id="stock_qty"
+                 name="stock_qty"
+                 class="form-control"
+                 value="{{ item.stock_qty if item else '' }}">
+        </div>
+      </div>
+
+      <!-- Submit & Cancel -->
+      <button type="submit" class="btn btn-primary">{{ action }} Item</button>
+      <a href="{{ url_for('items.list_items') }}" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="text-center text-muted py-3 mt-4">
+    © 2025 Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <!-- Bootstrap JS & Font Awesome -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+</html>

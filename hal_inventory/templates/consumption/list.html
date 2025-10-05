@@ -1,0 +1,529 @@
+{# templates/consumption/list.html #}
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <title>Consumption Logs — HAL Koraput IMS</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700&family=Open+Sans:wght@300;400;600&display=swap"
+    rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet">
+
+  <style>
+    /* ======================
+       CSS Variables & Theming
+       ====================== */
+    :root {
+      --font-heading: 'Roboto Slab', serif;
+      --font-body: 'Open Sans', sans-serif;
+      --transition: 0.3s ease;
+
+      /* Light theme */
+      --bg-base-light: #f5f7fa;
+      --bg-panel-light: rgba(255,255,255,0.85);
+      --text-primary-light: #1f2933;
+      --text-secondary-light: #4b5563;
+      --accent-primary-light: #007bff;
+      --accent-hover-light: #0056b3;
+      --border-light: rgba(0,0,0,0.1);
+
+      /* Dark theme */
+      --bg-base-dark: #0d0d12;
+      --bg-panel-dark: rgba(20,20,28,0.85);
+      --text-primary-dark: #e0e0e0;
+      --text-secondary-dark: #a0a0a0;
+      --accent-primary-dark: #00bfff;
+      --accent-hover-dark: #009acd;
+      --border-dark: rgba(255,255,255,0.2);
+    }
+    html[data-theme="light"], body[data-theme="light"] {
+      --bg-base: var(--bg-base-light);
+      --bg-panel: var(--bg-panel-light);
+      --text-primary: var(--text-primary-light);
+      --text-secondary: var(--text-secondary-light);
+      --accent-primary: var(--accent-primary-light);
+      --accent-hover: var(--accent-hover-light);
+      --border-color: var(--border-light);
+    }
+    html[data-theme="dark"], body[data-theme="dark"] {
+      --bg-base: var(--bg-base-dark);
+      --bg-panel: var(--bg-panel-dark);
+      --text-primary: var(--text-primary-dark);
+      --text-secondary: var(--text-secondary-dark);
+      --accent-primary: var(--accent-primary-dark);
+      --accent-hover: var(--accent-hover-dark);
+      --border-color: var(--border-dark);
+    }
+
+    /* Global reset */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      transition: background var(--transition), color var(--transition);
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; transition: color var(--transition); }
+    a:hover { color: var(--accent-hover); }
+    button, input, select, textarea {
+      font-family: var(--font-body);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    /* Animated gradient background */
+    body::before {
+      content: "";
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(135deg,
+        rgba(13,13,18,1),
+        rgba(38,41,51,1),
+        rgba(13,13,18,1));
+      background-size: 300% 300%;
+      animation: bgAnim 30s ease infinite;
+      z-index: -2;
+    }
+    @keyframes bgAnim {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+    body::after {
+      content: "";
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 20px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 20px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Preloader */
+    #preloader {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: var(--bg-base);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2000;
+    }
+    .spinner {
+      width: 3rem; height: 3rem;
+      border: 0.4rem solid rgba(255,255,255,0.2);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Header / Topbar */
+    header.topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 60px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1rem;
+      z-index: 100;
+    }
+    header.topbar .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    header.topbar .brand img {
+      height: 32px;
+    }
+    header.topbar .brand span {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      color: var(--accent-primary);
+    }
+    header.topbar nav {
+      display: flex; gap: 1rem;
+    }
+    header.topbar nav a {
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: background var(--transition), color var(--transition);
+    }
+    header.topbar nav a.active,
+    header.topbar nav a:hover {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+    header.topbar .actions {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    header.topbar .actions button,
+    header.topbar .actions a {
+      background: none; border: none; font-size: 1.2rem;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+    }
+    header.topbar .actions button:hover,
+    header.topbar .actions a:hover {
+      color: var(--accent-primary);
+    }
+
+    /* Main container */
+    main.container {
+      margin-top: 80px; /* below header */
+      padding: 1rem;
+      max-width: 1000px;
+      margin-left: auto; margin-right: auto;
+    }
+    .container h1 {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      color: var(--accent-primary);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .container .subheader {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* Section header with Add button */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      color: var(--accent-primary);
+    }
+    .btn-add {
+      display: inline-flex; align-items: center;
+      background: var(--accent-primary);
+      color: #fff;
+      padding: 0.4rem 0.8rem;
+      border: none; border-radius: 4px;
+      font-weight: 600;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .btn-add i { margin-right: 0.4rem; }
+    .btn-add:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Card grid for logs */
+    .logs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .log-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      backdrop-filter: blur(8px);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+    .log-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,191,255,0.3);
+      background: var(--accent-primary)10; /* slight tinted */
+    }
+    .log-card .card-header {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      color: var(--accent-primary);
+      margin-bottom: 0.75rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .log-card .card-header .date {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    .log-card .card-body {
+      flex: 1;
+      color: var(--text-primary);
+    }
+    .log-card .card-body p {
+      margin: 0.25rem 0;
+      font-size: 0.95rem;
+      line-height: 1.3;
+    }
+    .log-card .card-footer {
+      margin-top: auto;
+      display: flex; justify-content: flex-end;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* Table fallback / large screens */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+    table.logs-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+    table.logs-table th,
+    table.logs-table td {
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+    table.logs-table thead {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+    table.logs-table tbody tr:hover {
+      background: var(--accent-primary)10;
+    }
+    table.logs-table td.status {
+      font-weight: 600;
+      color: var(--accent-primary);
+    }
+
+    /* Toggle between card/table view */
+    .view-toggle {
+      display: flex; gap: 0.5rem;
+      align-items: center;
+    }
+    .view-toggle button {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      transition: background var(--transition), color var(--transition);
+    }
+    .view-toggle button.active,
+    .view-toggle button:hover {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+
+    /* No entries message */
+    .no-entries {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-top: 2rem;
+      font-size: 1rem;
+    }
+
+    /* Footer */
+    footer.site-footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 2rem;
+    }
+
+    /* Back-to-top */
+    #backToTop {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      width: 2.5rem; height: 2.5rem;
+      background: var(--accent-primary);
+      color: #fff;
+      border-radius: 50%;
+      display: none;
+      align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      transition: background var(--transition), transform var(--transition);
+      z-index: 100;
+    }
+    #backToTop:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Preloader -->
+  <div id="preloader"><div class="spinner"></div></div>
+
+  <!-- Header / Topbar -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="{{ url_for('admin.dashboard') }}">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" alt="HAL Logo">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <nav>
+      <a href="{{ url_for('consumption.list_logs') }}" class="active">Consumption Logs</a>
+      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+      <!-- add more nav items if needed -->
+    </nav>
+    <div class="actions">
+      <!-- Theme toggle -->
+      <button id="themeToggle" title="Toggle theme"><i class="fas fa-moon"></i></button>
+      <!-- Add new log link -->
+      <a href="{{ url_for('consumption.add_log') }}" title="Add Log"><i class="fas fa-plus-circle"></i></a>
+      <!-- Logout -->
+      <a href="{{ url_for('auth.logout') }}" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="container">
+    <h1>Consumption Logs</h1>
+    <p class="subheader">View all recorded consumption entries or add a new one.</p>
+
+    <div class="section-header">
+      <h2>Logs</h2>
+      <div class="view-toggle">
+        <button id="cardViewBtn" class="active" title="Card view"><i class="fas fa-th-large"></i></button>
+        <button id="tableViewBtn" title="Table view"><i class="fas fa-table"></i></button>
+      </div>
+    </div>
+
+    {% if entries %}
+      <!-- Card grid view -->
+      <div id="cardView" class="logs-grid">
+        {% for log, item, user in entries %}
+          <div class="log-card">
+            <div class="card-header">
+              <span>{{ item.name }}</span>
+              <span class="date">{{ log.log_date }}</span>
+            </div>
+            <div class="card-body">
+              <p><strong>Actual Qty:</strong> {{ log.actual_qty }}</p>
+              <p><strong>Expected Qty:</strong> {{ log.expected_qty }}</p>
+              <p><strong>Logged By:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+            </div>
+            <div class="card-footer">
+              <!-- Optionally, add a 'View Details' link if available -->
+              {# <a href="{{ url_for('consumption.view_log', log_id=log.id) }}">Details</a> #}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Table view (hidden by default) -->
+      <div id="tableView" class="table-responsive" style="display:none;">
+        <table class="logs-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Item</th>
+              <th>Actual Qty</th>
+              <th>Expected Qty</th>
+              <th>Logged By</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log, item, user in entries %}
+            <tr>
+              <td>{{ log.log_date }}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ log.actual_qty }}</td>
+              <td>{{ log.expected_qty }}</td>
+              <td>{{ user.first_name }} {{ user.last_name }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="no-entries">No consumption logs yet. Click the + icon above to add one.</p>
+    {% endif %}
+  </main>
+
+  <!-- Back-to-top Button -->
+  <div id="backToTop"><i class="fas fa-chevron-up"></i></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    &copy; {{ current_year or "2025" }} Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Preloader hide
+    window.addEventListener('load', function(){
+      const pre = document.getElementById('preloader');
+      if(pre){
+        pre.style.opacity = '0';
+        setTimeout(()=> pre.remove(), 300);
+      }
+    });
+
+    // Theme toggle (dark/light)
+    (function(){
+      const docEl = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const icon = btn.querySelector('i');
+      function applyTheme(theme){
+        docEl.setAttribute('data-theme', theme);
+        if(theme==='light'){
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        } else {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        }
+      }
+      const stored = localStorage.getItem('theme');
+      if(stored==='light') applyTheme('light');
+      else applyTheme('dark');
+      btn.addEventListener('click', ()=>{
+        const cur = docEl.getAttribute('data-theme');
+        const next = cur==='light'?'dark':'light';
+        applyTheme(next);
+        localStorage.setItem('theme', next);
+      });
+    })();
+
+    // Back-to-top
+    const backBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', ()=>{
+      if(window.scrollY > 300) backBtn.style.display = 'flex';
+      else backBtn.style.display = 'none';
+    });
+    if(backBtn){
+      backBtn.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
+    }
+
+    // View toggle between card and table
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const cardBtn = document.getElementById('cardViewBtn');
+      const tableBtn = document.getElementById('tableViewBtn');
+      const cardView = document.getElementById('cardView');
+      const tableView = document.getElementById('tableView');
+
+      function showCard(){
+        cardView.style.display = 'grid';
+        if(tableView) tableView.style.display = 'none';
+        cardBtn.classList.add('active');
+        tableBtn.classList.remove('active');
+      }
+      function showTable(){
+        if(cardView) cardView.style.display = 'none';
+        tableView.style.display = 'block';
+        tableBtn.classList.add('active');
+        cardBtn.classList.remove('active');
+      }
+      cardBtn.addEventListener('click', showCard);
+      tableBtn.addEventListener('click', showTable);
+    });
+  </script>
+</body>
+</html>

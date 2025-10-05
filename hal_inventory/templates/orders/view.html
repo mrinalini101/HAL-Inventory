@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <title>Order #{{ order.order_id }} | HAL Koraput IMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootswatch Lux + FontAwesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.1/dist/lux/bootstrap.min.css" rel="stylesheet">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+  <style>
+    /* Reuse your dark‐theme variables from list.html */
+    :root {
+      --bg-base-dark: #0a0c11;
+      --bg-panel-dark: #1a1e26;
+      --bg-hover-dark: #2c3140;
+      --text-primary-dark: #e4eaf0;
+      --text-muted-dark: #7b8491;
+      --border-dark: #324055;
+      --accent-primary: #0066cc;
+      --accent-secondary: #3399ff;
+      --accent-hover: #0052a3;
+      --status-open:   #ffc107;
+      --status-approved:#28a745;
+      --status-rejected:#dc3545;
+      --status-closed: #6c757d;
+      --shadow-color: rgba(0,0,0,0.6);
+      --transition-speed: .25s;
+      --border-radius: 6px;
+      --topbar-height: 60px;
+      --logo-height: 32px;
+    }
+    html[data-theme="dark"], body[data-theme="dark"] {
+      --bg-base: var(--bg-base-dark);
+      --bg-panel: var(--bg-panel-dark);
+      --bg-hover: var(--bg-hover-dark);
+      --text-primary: var(--text-primary-dark);
+      --text-muted: var(--text-muted-dark);
+      --border-color: var(--border-dark);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      display:flex; flex-direction:column;
+      min-height:100vh;
+      transition:background var(--transition-speed), color var(--transition-speed);
+    }
+    a { color:inherit; text-decoration:none; transition:color var(--transition-speed); }
+    a:hover { color: var(--accent-hover); }
+
+    /* ========== Topbar ========== */
+    header.topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--topbar-height);
+      padding: 0 1rem;
+      background: var(--bg-panel);
+      border-bottom: 4px solid var(--accent-secondary);
+      box-shadow: 0 2px 4px var(--shadow-color);
+    }
+    header.topbar .brand {
+      display:flex; align-items:center; gap:.5rem;
+    }
+    header.topbar .brand img {
+      height: var(--logo-height);
+    }
+    header.topbar .brand span {
+      font-family: 'Orbitron', sans-serif;
+      font-size:1.2rem;
+      color: var(--accent-primary);
+    }
+    header.topbar .actions {
+      display:flex; align-items:center; gap:1rem;
+    }
+    header.topbar .actions a,
+    header.topbar .actions button {
+      background:none; border:none; cursor:pointer;
+      color: var(--text-muted);
+      font-size:1.2rem;
+      transition:color var(--transition-speed);
+    }
+    header.topbar .actions a:hover,
+    header.topbar .actions button:hover {
+      color: var(--accent-primary);
+    }
+
+    /* ========== Main ========== */
+    .content {
+      flex:1; padding:1.5rem;
+      max-width: 800px; margin:0 auto;
+    }
+
+    .card-order {
+      background: var(--bg-panel);
+      border-radius: .75rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .badge-status { text-transform:uppercase; font-weight:500; }
+    .btn-back {
+      background-color: #6c757d;
+      border-color: #6c757d;
+    }
+    .btn-back:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+
+    /* ========== Footer ========== */
+    footer.site-footer {
+      text-align:center;
+      padding:1rem;
+      color: var(--text-muted);
+      background: var(--bg-panel);
+      border-top:1px solid var(--border-color);
+      margin-top:auto;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <a href="{{ url_for('main.dashboard') }}">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" alt="HAL IMS">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <div class="actions">
+      <a href="{{ url_for('main.dashboard') }}" title="Home"><i class="fas fa-home"></i></a>
+      <a href="{{ url_for('orders.list_orders') }}" title="Orders"><i class="fas fa-list"></i></a>
+      <a href="{{ url_for('auth.logout') }}"       title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- ORDER SUMMARY CARD -->
+    <div class="card card-order mb-5">
+      <div class="card-body">
+        <h2 class="card-title">
+          Order #{{ order.order_id }}
+          <span class="badge badge-status ms-2
+            {% if order.status_code=='OPEN' %}bg-warning text-dark
+            {% elif order.status_code=='APPROVED' %}bg-success
+            {% elif order.status_code=='REJECTED' %}bg-danger
+            {% else %}bg-secondary{% endif %}">
+            {{ order.status_code }}
+          </span>
+        </h2>
+
+        <ul class="list-group list-group-flush mt-4">
+          <li class="list-group-item"><strong>ID:</strong> {{ order.order_id }}</li>
+          <li class="list-group-item"><strong>Date:</strong> {{ order.order_date }}</li>
+          <li class="list-group-item"><strong>Supplier:</strong> {{ order.supplier.name }}</li>
+          <li class="list-group-item">
+            <strong>Value:</strong> {{ "%.2f"|format(total_value) }} {{ order.currency }}
+          </li>
+          <li class="list-group-item"><strong>Status:</strong> {{ order.status_code }}</li>
+        </ul>
+
+        <div class="d-flex justify-content-end mt-4">
+          <a href="{{ url_for('orders.list_orders') }}"
+             class="btn btn-back text-white">
+            <i class="fas fa-arrow-left me-1"></i>Back to Orders
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    &copy; 2025 Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

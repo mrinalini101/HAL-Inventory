@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spare Parts | HAL Koraput IMS</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- HEADER + NAV -->
+  <header class="site-header">
+    <div class="logo">
+      <img src="/static/img/hal-logo.png" alt="HAL Logo">
+    </div>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/auth/logout">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- SPARE PARTS TABLE -->
+  <main class="home-content">
+    <h2>Spare Parts</h2>
+    {% if items %}
+    <table>
+      <thead>
+        <tr>
+          <th>Mat Code</th>
+          <th>Name</th>
+          <th>Stock</th>
+          <th>Reorder Level</th>
+          <th>Unit Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ item.mat_code }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.stock_qty }}</td>
+          <td>{{ item.rol }}</td>
+          <td>{{ "{:.2f}".format(item.unit_price) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p>No spare parts found.</p>
+    {% endif %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>© HAL Koraput Division 2025</p>
+  </footer>
+
+</body>
+</html>

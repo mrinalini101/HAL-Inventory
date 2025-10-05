@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <title>{{ action }} Order — HAL Koraput IMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootswatch Lux for clean base -->
+  <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.1/dist/lux/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+  <style>
+    /* ── Theme Variables ───────────────────────────────────────────── */
+    :root {
+      --font-sans: 'Roboto', sans-serif;
+      --font-display: 'Orbitron', sans-serif;
+
+      --bg-base-dark: #0a0c11;
+      --bg-panel-dark: #1a1e26;
+      --bg-hover-dark: #2c3140;
+      --text-primary-dark: #e4eaf0;
+      --text-muted-dark: #7b8491;
+      --border-dark: #324055;
+
+      --accent-primary: #0066cc;
+      --accent-secondary: #3399ff;
+      --accent-hover: #0052a3;
+
+      --shadow-color: rgba(0,0,0,0.6);
+      --transition-speed: .25s;
+      --border-radius: 6px;
+      --topbar-height: 60px;
+      --logo-height: 32px;
+    }
+    html[data-theme="dark"], body[data-theme="dark"] {
+      --bg-base: var(--bg-base-dark);
+      --bg-panel: var(--bg-panel-dark);
+      --bg-hover: var(--bg-hover-dark);
+      --text-primary: var(--text-primary-dark);
+      --text-muted: var(--text-muted-dark);
+      --border-color: var(--border-dark);
+    }
+
+    /* ── Global & Body ─────────────────────────────────────────────── */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background var(--transition-speed), color var(--transition-speed);
+    }
+    a { color: inherit; text-decoration: none; transition: color var(--transition-speed); }
+    a:hover { color: var(--accent-hover); }
+
+    /* ── Topbar ───────────────────────────────────────────────────── */
+    header.topbar {
+      position: sticky; top: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      height: var(--topbar-height);
+      padding: 0 1rem;
+      background: var(--bg-panel);
+      border-bottom: 4px solid var(--accent-secondary);
+      box-shadow: 0 2px 4px var(--shadow-color);
+    }
+    .topbar .brand {
+      display:flex; align-items:center; gap:.5rem;
+    }
+    .topbar .brand img { height: var(--logo-height); }
+    .topbar .brand span {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--accent-primary);
+    }
+    .topbar .actions {
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .topbar .actions button,
+    .topbar .actions a {
+      background:none; border:none; cursor:pointer;
+      font-size:1.2rem; color: var(--text-muted);
+      transition: color var(--transition-speed);
+    }
+    .topbar .actions button:hover,
+    .topbar .actions a:hover {
+      color: var(--accent-primary);
+    }
+
+    /* ── Form Panel ───────────────────────────────────────────────── */
+    .panel {
+      max-width: 960px;
+      width: 100%;
+      margin: 2rem auto;
+      background: var(--bg-panel);
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 12px var(--shadow-color);
+    }
+    .panel h2 {
+      font-family: var(--font-display);
+      color: var(--accent-secondary);
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    form .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    form .col-6 {
+      flex: 1 1 calc(50% - 1.5rem);
+    }
+    @media (max-width: 768px) {
+      form .col-6 {
+        flex: 1 1 100%;
+      }
+    }
+    .form-label {
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .btn-primary {
+      width: 100%;
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+      transition: background var(--transition-speed), transform var(--transition-speed);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    /* ── Footer ────────────────────────────────────────────────────── */
+    footer.site-footer {
+      text-align: center;
+      padding: 1rem;
+      background: var(--bg-panel);
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="{{ url_for('main.dashboard') }}">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" alt="HAL IMS">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <div class="actions">
+      <!-- Dark/Light -->
+      <button id="themeToggle" title="Toggle theme"><i class="fas fa-moon"></i></button>
+      <!-- Home -->
+      <a href="{{ url_for('main.dashboard') }}" title="Home"><i class="fas fa-home"></i></a>
+      <!-- Back -->
+      <a href="{{ url_for('orders.list_orders') }}" title="Back"><i class="fas fa-arrow-left"></i></a>
+    </div>
+  </header>
+
+  <!-- Form Panel -->
+  <div class="panel">
+    <h2>{{ action }} Order</h2>
+    <form method="post" action="">
+      <div class="row">
+        <div class="col-6">
+          <label for="order_date" class="form-label">Order Date</label>
+          <input type="date" id="order_date" name="order_date"
+                 class="form-control" value="{{ today }}" required>
+        </div>
+        <div class="col-6">
+          <label for="supplier_id" class="form-label">Supplier</label>
+          <select id="supplier_id" name="supplier_id" class="form-select" required>
+            <option value="" disabled selected>-- Select a supplier --</option>
+            {% for sup in suppliers %}
+            <option value="{{ sup.supplier_id }}">{{ sup.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6">
+          <label for="currency" class="form-label">Currency</label>
+          <input type="text" id="currency" name="currency"
+                 class="form-control" value="{{ default_currency }}" required>
+        </div>
+        <div class="col-6">
+          <label for="value" class="form-label">Value</label>
+          <input type="number" id="value" name="value"
+                 class="form-control" step="0.01" min="0"
+                 placeholder="Enter total order value" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6">
+          <label for="item_id" class="form-label">First Line Item</label>
+          <select id="item_id" name="item_id" class="form-select" required>
+            <option value="" disabled selected>-- Select an item --</option>
+            {% for it in items %}
+            <option value="{{ it.item_id }}">{{ it.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-6">
+          <label for="quantity" class="form-label">Quantity</label>
+          <input type="number" id="quantity" name="quantity"
+                 class="form-control" step="0.01" min="0" required>
+        </div>
+      </div>
+
+      <div style="margin-top:2rem;">
+        <button type="submit" class="btn btn-primary btn-lg">
+          <i class="fas fa-check-circle me-1"></i> {{ action }} Order
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    &copy; 2025 Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <script>
+    // Dark/Light toggle
+    (function(){
+      const doc = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const icon = btn.querySelector('i');
+      const apply = theme => {
+        doc.setAttribute('data-theme', theme);
+        icon.className = theme==='dark' ? 'fas fa-sun' : 'fas fa-moon';
+      };
+      let current = localStorage.getItem('theme') || 'dark';
+      apply(current);
+      btn.onclick = () => {
+        current = current==='dark' ? 'light' : 'dark';
+        apply(current);
+        localStorage.setItem('theme', current);
+      };
+    })();
+  </script>
+</body>
+</html>

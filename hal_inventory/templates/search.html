@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Global Search | HAL Koraput IMS</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    /* ======================
+       CSS Variables & Theming
+       ====================== */
+    :root {
+      --font-heading: 'Montserrat', sans-serif;
+      --font-body: 'Roboto', sans-serif;
+
+      /* Light theme colors */
+      --bg-base: #f5f7fa;
+      --bg-panel: #ffffff;
+      --bg-hover: #eef2f7;
+      --text-primary: #2c3e50;
+      --text-secondary: #7f8c8d;
+      --border-color: #d1d5db;
+
+      /* Accent */
+      --accent-blue: #0066cc;
+      --accent-blue-light: #3399ff;
+      --accent-hover: #005bb5;
+
+      /* Shadows & transitions */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --transition: 0.25s ease;
+      --radius: 6px;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      font-family: var(--font-body);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+    a { color: var(--accent-blue); text-decoration: none; }
+    a:hover { color: var(--accent-blue-light); }
+
+    /* Header */
+    header.site-header {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1rem;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0; z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .site-header .brand {
+      display: flex; align-items: center;
+    }
+    .site-header .brand img {
+      height: 32px; margin-right: 0.5rem;
+    }
+    .site-header .brand span {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      color: var(--accent-blue);
+    }
+    .site-header nav {
+      display: flex; gap: 1rem;
+    }
+    .site-header nav a {
+      font-weight: 500;
+      padding: 0.4rem 0.6rem;
+      border-radius: var(--radius);
+      transition: background var(--transition);
+    }
+    .site-header nav a.active,
+    .site-header nav a:hover {
+      background: var(--bg-hover);
+    }
+
+    /* Container */
+    main.container {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    main.container h2 {
+      font-family: var(--font-heading);
+      color: var(--accent-blue);
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    /* Search form */
+    .search-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      background: var(--bg-panel);
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+    .search-form input[type="text"],
+    .search-form select {
+      flex: 1 1 200px;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .search-form input:focus,
+    .search-form select:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 2px rgba(0,102,204,0.2);
+    }
+    .search-form button {
+      padding: 0.55rem 1rem;
+      background: var(--accent-blue);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+      flex: 0 0 auto;
+    }
+    .search-form button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Results */
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .results-header h3 {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      color: var(--text-primary);
+    }
+    .results-header .total-count {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .results-table thead {
+      background: var(--accent-blue);
+      color: #fff;
+    }
+    .results-table thead th {
+      padding: 0.65rem 0.75rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+    }
+    .results-table thead th a {
+      color: #fff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .results-table thead th a:hover {
+      text-decoration: underline;
+    }
+    .results-table tbody tr {
+      border-bottom: 1px solid var(--border-color);
+      transition: background var(--transition);
+    }
+    .results-table tbody tr:last-child {
+      border-bottom: none;
+    }
+    .results-table tbody tr:hover {
+      background: var(--bg-hover);
+    }
+    .results-table td, .results-table th {
+      padding: 0.6rem 0.75rem;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+    .results-table td a {
+      color: var(--accent-blue);
+    }
+    .results-table td a:hover {
+      color: var(--accent-blue-light);
+    }
+
+    /* Pagination */
+    .pagination {
+      margin: 1rem 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .pagination a,
+    .pagination span {
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .pagination a:hover {
+      background: var(--bg-hover);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+    .pagination .current-page {
+      background: var(--accent-blue);
+      color: #fff;
+      border-color: var(--accent-blue);
+    }
+
+    /* No-results */
+    .no-results {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-top: 2rem;
+      font-size: 1rem;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .search-form {
+        flex-direction: column;
+      }
+      .results-table thead {
+        display: none;
+      }
+      .results-table, .results-table tbody, .results-table tr, .results-table td {
+        display: block;
+        width: 100%;
+      }
+      .results-table tr {
+        margin-bottom: 1rem;
+      }
+      .results-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+      }
+      .results-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 0.75rem;
+        font-weight: 500;
+        text-align: left;
+        color: var(--text-secondary);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header/Navbar -->
+  <header class="site-header">
+    <div class="brand d-flex align-items-center">
+      <a href="{{ url_for('admin.dashboard') }}" class="d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" alt="HAL Logo">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <nav>
+      <a href="{{ url_for('search.search') }}" class="active">Search</a>
+      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+      <!-- add other nav links as needed -->
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <h2>Search</h2>
+
+    <!-- Search Form -->
+    <form class="search-form" method="get" action="{{ url_for('search.search') }}">
+      <input type="text" name="q" placeholder="Keyword…" value="{{ q|default('') }}" aria-label="Search keyword">
+      <select name="module" aria-label="Module">
+        <option value="items"      {% if module=='items' %}selected{% endif %}>Items</option>
+        <option value="suppliers"  {% if module=='suppliers' %}selected{% endif %}>Suppliers</option>
+        <option value="kits"       {% if module=='kits' %}selected{% endif %}>Kits</option>
+        <option value="orders"     {% if module=='orders' %}selected{% endif %}>Orders</option>
+      </select>
+      <!-- Additional filters can go here, styled similarly -->
+      <button type="submit"><i class="fas fa-search"></i> Search</button>
+    </form>
+
+    {% if results %}
+      <div class="results-header">
+        <h3>Results</h3>
+        <span class="total-count">({{ pagination.total }})</span>
+      </div>
+      <table class="results-table">
+        <thead>
+          <tr>
+            {% if module=='items' %}
+              {% set new_dir = 'asc' if sort_dir=='desc' else 'desc' %}
+              <th>
+                <a href="{{ url_for('search.search', q=q, module=module, sort_by='mat_code', sort_dir=new_dir) }}">
+                  Code
+                  {% if sort_by=='mat_code' %}
+                    <i class="fas fa-sort-{{ 'down' if sort_dir=='desc' else 'up' }}" style="font-size:0.75rem;"></i>
+                  {% else %}
+                    <i class="fas fa-sort" style="font-size:0.75rem; opacity:0.6;"></i>
+                  {% endif %}
+                </a>
+              </th>
+              <th>
+                <a href="{{ url_for('search.search', q=q, module=module, sort_by='name', sort_dir=new_dir) }}">
+                  Name
+                  {% if sort_by=='name' %}
+                    <i class="fas fa-sort-{{ 'down' if sort_dir=='desc' else 'up' }}" style="font-size:0.75rem;"></i>
+                  {% else %}
+                    <i class="fas fa-sort" style="font-size:0.75rem; opacity:0.6;"></i>
+                  {% endif %}
+                </a>
+              </th>
+              <th>Category</th>
+              <th>Supplier</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            {% elif module=='suppliers' %}
+              <th>Name</th><th>City</th><th>Email</th><th>Actions</th>
+            {% elif module=='kits' %}
+              <th>Kit No</th><th>Name</th><th>Engine No</th><th>Actions</th>
+            {% else %}
+              <th>Order ID</th><th>Date</th><th>Status</th><th>Actions</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in results %}
+          <tr>
+            {% if module=='items' %}
+              <td data-label="Code">{{ obj.mat_code }}</td>
+              <td data-label="Name">{{ obj.name }}</td>
+              <td data-label="Category">{{ obj.category.name }}</td>
+              <td data-label="Supplier">{{ obj.supplier.name }}</td>
+              <td data-label="Stock">{{ obj.stock_qty }}</td>
+              <td data-label="Actions">
+                <a href="{{ url_for('items.edit_item', item_id=obj.item_id) }}" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </a>
+              </td>
+            {% elif module=='suppliers' %}
+              <td data-label="Name">{{ obj.name }}</td>
+              <td data-label="City">{{ obj.city }}</td>
+              <td data-label="Email">{{ obj.email }}</td>
+              <td data-label="Actions">
+                <a href="{{ url_for('suppliers.edit_supplier', sup_id=obj.supplier_id) }}" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </a>
+              </td>
+            {% elif module=='kits' %}
+              <td data-label="Kit No">{{ obj.kit_no }}</td>
+              <td data-label="Name">{{ obj.kit_name }}</td>
+              <td data-label="Engine No">{{ obj.engine_no }}</td>
+              <td data-label="Actions">
+                <a href="{{ url_for('kits.view_kit', kit_no=obj.kit_no) }}" title="View">
+                  <i class="fas fa-eye"></i>
+                </a>
+              </td>
+            {% else %}
+              <td data-label="Order ID">{{ obj.order_id }}</td>
+              <td data-label="Date">{{ obj.order_date }}</td>
+              <td data-label="Status">{{ obj.status_code }}</td>
+              <td data-label="Actions">
+                <a href="{{ url_for('orders.edit_order', order_id=obj.order_id) }}" title="View">
+                  <i class="fas fa-eye"></i>
+                </a>
+              </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- Pagination controls -->
+      <div class="pagination">
+        {% if pagination.has_prev %}
+          <a href="{{ url_for('search.search', q=q, module=module, page=pagination.prev_num) }}">
+            &laquo; Prev
+          </a>
+        {% endif %}
+        <span class="current-page">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+        {% if pagination.has_next %}
+          <a href="{{ url_for('search.search', q=q, module=module, page=pagination.next_num) }}">
+            Next &raquo;
+          </a>
+        {% endif %}
+      </div>
+    {% else %}
+      <p class="no-results">No results found.</p>
+    {% endif %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" style="text-align:center; padding:1rem; color: var(--text-secondary);">
+    &copy; {{ current_year or "2025" }} Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <!-- Optional JS for tooltips or further interactivity -->
+  <script>
+    // If you want to add any JS (e.g., close alerts), include here.
+    // No preloader in this page, since it's fairly light.
+  </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Items — HAL Koraput IMS</title>
+
+  <!-- Bootswatch Lux (light theme) -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.1/dist/lux/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <!-- Font Awesome for icons -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet"
+  >
+
+  <style>
+    /* ============================
+       Theme variables
+       ============================ */
+    :root {
+      /* Light */
+      --bg-light: #f8f9fa;
+      --panel-light: #ffffff;
+      --text-light: #212529;
+      --text-muted-light: #6c757d;
+      --accent-light: #003366;
+
+      /* Dark */
+      --bg-dark: #12141a;
+      --panel-dark: #1f2128;
+      --text-dark: #e4eaf0;
+      --text-muted-dark: #7b8491;
+      --accent-dark: #3399ff;
+
+      /* shared */
+      --transition: 0.25s;
+      --topbar-h: 56px;
+    }
+    html[data-theme="light"] {
+      --bg-base: var(--bg-light);
+      --bg-panel: var(--panel-light);
+      --text-primary: var(--text-light);
+      --text-muted: var(--text-muted-light);
+      --accent-primary: var(--accent-light);
+    }
+    html[data-theme="dark"] {
+      --bg-base: var(--bg-dark);
+      --bg-panel: var(--panel-dark);
+      --text-primary: var(--text-dark);
+      --text-muted: var(--text-muted-dark);
+      --accent-primary: var(--accent-dark);
+    }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      transition: background var(--transition), color var(--transition);
+    }
+
+    /* ============================
+       Topbar
+       ============================ */
+    header.topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--topbar-h);
+      padding: 0 .75rem;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--text-muted);
+    }
+    header.topbar .brand {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    header.topbar .brand img {
+      height: 32px;
+    }
+    header.topbar .brand span {
+      font-weight: 600;
+      color: var(--accent-primary);
+    }
+    header.topbar .actions {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    header.topbar .actions button,
+    header.topbar .actions a {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      transition: color var(--transition);
+    }
+    header.topbar .actions button:hover,
+    header.topbar .actions a:hover {
+      color: var(--accent-primary);
+    }
+
+    /* ============================
+       Page header / buttons
+       ============================ */
+    .page-header {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .page-header h1 {
+      margin: 0;
+      font-size: 1.75rem;
+    }
+    .page-header .btn-group {
+      margin-top: .5rem;
+    }
+
+    /* ============================
+       Table dark-mode tweaks
+       ============================ */
+    .table-responsive {
+      background: var(--bg-panel);
+      border: 1px solid var(--text-muted);
+      border-radius: .25rem;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    table.table th,
+    table.table td {
+      border-color: var(--text-muted);
+    }
+    html[data-theme="dark"] table.table-striped > tbody > tr:nth-of-type(odd) {
+      --bs-table-accent-bg: #2a2e38;
+    }
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="{{ url_for('main.dashboard') }}" class="d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" alt="HAL Logo">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <div class="actions">
+      <!-- Theme toggle -->
+      <button id="themeToggle" title="Toggle theme">
+        <i class="fas fa-moon"></i>
+      </button>
+      <!-- Home -->
+      <a href="{{ url_for('main.dashboard') }}" title="Home">
+        <i class="fas fa-home"></i>
+      </a>
+    </div>
+  </header>
+
+  <div class="container py-4">
+    <!-- Page header -->
+    <div class="page-header">
+      <h1>Inventory Items</h1>
+      <div class="btn-group">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+          <i class="fas fa-home"></i> Home
+        </a>
+        <a href="{{ url_for('items.add_item') }}" class="btn btn-success btn-sm">
+          <i class="fas fa-plus"></i> Add New Item
+        </a>
+      </div>
+    </div>
+
+    <!-- Items table -->
+    <div class="table-responsive">
+      <table class="table table-striped align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Supplier</th>
+            <th>Type</th>
+            <th>UoM</th>
+            <th>Stock</th>
+            <th>ROL</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for it in items %}
+          <tr>
+            <td>{{ it.mat_code }}</td>
+            <td>{{ it.name }}</td>
+            <td>{{ it.category.name }}</td>
+            <td>{{ it.supplier.name }}</td>
+            <td>{{ it.inv_type.type_name }}</td>
+            <td>{{ it.uom.code }}</td>
+            <td>{{ it.stock_qty }}</td>
+            <td>{{ it.rol }}</td>
+            <td>
+              <div class="btn-group" role="group" aria-label="Item actions">
+                <a href="{{ url_for('items.edit_item', item_id=it.item_id) }}"
+                   class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-edit"></i> Edit
+                </a>
+                <form method="post"
+                      action="{{ url_for('items.delete_item', item_id=it.item_id) }}"
+                      onsubmit="return confirm('Delete this item?');"
+                      style="display:inline;">
+                  <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-trash-alt"></i> Delete
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" class="text-center text-muted">No items found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center text-muted py-3">
+    &copy; 2025 Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
+  <script>
+    // Theme toggle
+    const toggle = document.getElementById('themeToggle');
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      toggle.innerHTML = theme === 'light'
+        ? '<i class="fas fa-moon"></i>'
+        : '<i class="fas fa-sun"></i>';
+    }
+    const saved = localStorage.getItem('theme') || 'light';
+    applyTheme(saved);
+    toggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'light'
+        ? 'dark' : 'light';
+      applyTheme(next);
+      localStorage.setItem('theme', next);
+    });
+  </script>
+</body>
+</html>

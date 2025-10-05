@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kits — HAL Koraput IMS</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700&family=Open+Sans:wght@300;400;600&display=swap" 
+    rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link 
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+    rel="stylesheet">
+
+  <style>
+    /* ======================
+       Color Palette & Typography
+       ====================== */
+    :root {
+      --font-heading: 'Roboto Slab', serif;
+      --font-body: 'Open Sans', sans-serif;
+
+      /* Light theme base */
+      --bg-base: #f0f2f5;
+      --bg-panel: #ffffff;
+      --bg-hover: #e8ecef;
+      --border-color: #d0d4d8;
+      --text-primary: #1f2933;
+      --text-secondary: #4b5563;
+
+      /* Accent */
+      --accent-primary: #ff6600; /* orange */
+      --accent-secondary: #2a4365; /* deep blue */
+      --accent-hover: #ff8533;
+
+      --transition: 0.25s ease;
+      --radius: 8px;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --topbar-height: 60px;
+      --logo-height: 36px;
+    }
+    [data-theme="dark"] {
+      --bg-base: #1a1c23;
+      --bg-panel: rgba(28,31,39,0.9);
+      --bg-hover: rgba(38,41,51,0.9);
+      --border-color: #3a3f4b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #a0aec0;
+      --accent-primary: #ff8533;
+      --accent-secondary: #1f306e;
+      --accent-hover: #ffaa66;
+      --shadow: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Reset & Base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background var(--transition), color var(--transition);
+    }
+    a { color: inherit; text-decoration: none; }
+    a:hover { color: var(--accent-hover); }
+    button { font-family: var(--font-body); cursor: pointer; }
+
+    /* Topbar */
+    header.topbar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--topbar-height);
+      padding: 0 1rem;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 2px 4px var(--shadow);
+      z-index: 100;
+    }
+    header.topbar .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    header.topbar .brand img {
+      height: var(--logo-height);
+    }
+    header.topbar .brand span {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      color: var(--accent-secondary);
+    }
+    header.topbar nav {
+      display: flex;
+      gap: 1rem;
+      margin-left: 2rem;
+    }
+    header.topbar nav a {
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      transition: background var(--transition), color var(--transition);
+    }
+    header.topbar nav a.active,
+    header.topbar nav a:hover {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+    header.topbar .actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    header.topbar .actions button,
+    header.topbar .actions a {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+    }
+    header.topbar .actions button:hover,
+    header.topbar .actions a:hover {
+      color: var(--accent-primary);
+    }
+
+    /* Preloader */
+    #preloader {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: var(--bg-base);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2000;
+    }
+    .spinner {
+      width: 3rem; height: 3rem;
+      border: 0.4rem solid rgba(0,0,0,0.1);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Main container */
+    main.container {
+      flex: 1;
+      padding: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    /* Flash messages */
+    .flash-container {
+      margin-bottom: 1rem;
+    }
+    .flash-container .alert {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px var(--shadow);
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+    .flash-container .alert .btn-close {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .flash-container .alert .btn-close:hover {
+      color: var(--accent-primary);
+    }
+
+    /* Section header */
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .section-header h1 {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      color: var(--accent-secondary);
+      margin-bottom: 0.5rem;
+    }
+    .section-header .btn-new {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent-primary);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 4px var(--shadow);
+      transition: background var(--transition), transform var(--transition);
+    }
+    .section-header .btn-new i {
+      font-size: 1.1rem;
+    }
+    .section-header .btn-new:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Card grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .kit-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+    .kit-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 8px var(--shadow);
+      background: var(--bg-hover);
+    }
+    .kit-card .card-header {
+      background: var(--accent-secondary);
+      color: #fff;
+      padding: 0.75rem 1rem;
+      font-family: var(--font-heading);
+      font-size: 1rem;
+    }
+    .kit-card .card-body {
+      flex: 1;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .kit-card .card-body .detail {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    .kit-card .card-footer {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-base);
+    }
+    .kit-card .card-footer a,
+    .kit-card .card-footer button {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      padding: 0.4rem;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--accent-primary);
+      color: #fff;
+      text-decoration: none;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .kit-card .card-footer a .fas,
+    .kit-card .card-footer button .fas {
+      font-size: 0.9rem;
+    }
+    .kit-card .card-footer a:hover,
+    .kit-card .card-footer button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+    .kit-card .card-footer button.delete-btn {
+      background: var(--accent-red);
+    }
+    .kit-card .card-footer button.delete-btn:hover {
+      background: #ff4c4c;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-top: 2rem;
+      font-size: 1rem;
+    }
+
+    /* Back-to-top */
+    #backToTop {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      background: var(--accent-primary);
+      color: #fff;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 4px var(--shadow);
+      transition: background var(--transition), transform var(--transition);
+    }
+    #backToTop:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Footer */
+    footer.site-footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      background: var(--bg-panel);
+      border-top: 1px solid var(--border-color);
+      box-shadow: 0 -2px 4px var(--shadow);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader"><div class="spinner"></div></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="/admin/dashboard">
+        <img src="/static/img/hal-logo.png" alt="HAL Logo">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <nav>
+      <a href="/kits/list" class="active">Kits</a>
+      <a href="/admin/dashboard">Dashboard</a>
+      <!-- add other links if needed -->
+    </nav>
+    <div class="actions">
+      <!-- Theme toggle -->
+      <button id="themeToggle" title="Toggle theme"><i class="fas fa-moon"></i></button>
+      <!-- Logout -->
+      <a href="/auth/logout" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="container">
+    <!-- Flash messages -->
+    <div class="flash-container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, msg in messages %}
+            <div class="alert alert-{{ category }}">
+              <span>{{ msg }}</span>
+              <button class="btn-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <!-- Section header -->
+    <div class="section-header">
+      <h1>Kits</h1>
+      {% if current_user.role in ['admin','manager'] %}
+      <a href="/kits/add" class="btn-new"><i class="fas fa-plus-circle"></i> New Kit</a>
+      {% endif %}
+    </div>
+
+    {% if kits %}
+    <div class="cards-grid">
+      {% for k in kits %}
+      <div class="kit-card">
+        <div class="card-header">
+          Kit {{ k.kit_no }}
+        </div>
+        <div class="card-body">
+          <div class="detail"><strong>Name:</strong> {{ k.kit_name }}</div>
+          <div class="detail"><strong>Engine No:</strong> {{ k.engine_no or '-' }}</div>
+          {% if k.created_by %}
+          <div class="detail"><strong>Created by:</strong> {{ k.created_by }}</div>
+          {% endif %}
+        </div>
+        <div class="card-footer">
+          <a href="/kits/view/{{ k.kit_no }}"><i class="fas fa-eye"></i> View</a>
+          {% if current_user.role in ['admin','manager'] %}
+          <a href="/kits/edit/{{ k.kit_no }}"><i class="fas fa-edit"></i> Edit</a>
+          {% endif %}
+          {% if current_user.role == 'admin' %}
+          <form action="/kits/delete/{{ k.kit_no }}" method="post" class="inline-form" style="margin:0;">
+            <button type="submit" class="delete-btn" onclick="return confirm('Delete kit?');">
+              <i class="fas fa-trash-alt"></i> Delete
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <p>No kits available.</p>
+      {% if current_user.role in ['admin','manager'] %}
+      <a href="/kits/add" class="btn-new"><i class="fas fa-plus-circle"></i> Create first Kit</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </main>
+
+  <!-- Back-to-top -->
+  <div id="backToTop"><i class="fas fa-chevron-up"></i></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    &copy; {{ current_year or "2025" }} Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Preloader hide
+    window.addEventListener('load', function(){
+      const pre = document.getElementById('preloader');
+      if(pre){
+        pre.style.opacity = '0';
+        setTimeout(()=> pre.remove(), 300);
+      }
+    });
+
+    // Theme Toggle (light/dark)
+    (function(){
+      const docEl = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const icon = btn.querySelector('i');
+      function applyTheme(theme){
+        docEl.setAttribute('data-theme', theme);
+        if(theme==='light'){
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        } else {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        }
+      }
+      // default to light; you can adjust to stored preference
+      const stored = localStorage.getItem('theme');
+      if(stored==='dark') applyTheme('dark');
+      else applyTheme('light');
+      btn.addEventListener('click', ()=>{
+        const cur = docEl.getAttribute('data-theme');
+        const next = cur==='light'?'dark':'light';
+        applyTheme(next);
+        localStorage.setItem('theme', next);
+      });
+    })();
+
+    // Back-to-top
+    const backBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', ()=>{
+      if(window.scrollY > 300) backBtn.style.display = 'flex';
+      else backBtn.style.display = 'none';
+    });
+    backBtn.addEventListener('click', ()=>{ window.scrollTo({top:0, behavior:'smooth'}); });
+  </script>
+</body>
+</html>

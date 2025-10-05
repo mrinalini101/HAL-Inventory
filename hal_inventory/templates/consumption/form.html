@@ -1,0 +1,454 @@
+{# templates/consumption/form.html #}
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <title>{{ action }} Consumption Log — HAL Koraput IMS</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700&family=Open+Sans:wght@300;400;600&display=swap"
+    rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet">
+
+  <style>
+    /* ======================
+       CSS Variables & Theming
+       ====================== */
+    :root {
+      --font-heading: 'Roboto Slab', serif;
+      --font-body: 'Open Sans', sans-serif;
+      --transition: 0.3s ease;
+
+      /* Light theme */
+      --bg-base-light: #f5f7fa;
+      --bg-panel-light: rgba(255,255,255,0.85);
+      --text-primary-light: #1f2933;
+      --text-secondary-light: #4b5563;
+      --accent-primary-light: #007bff;
+      --accent-hover-light: #0056b3;
+      --border-light: rgba(0,0,0,0.1);
+
+      /* Dark theme */
+      --bg-base-dark: #0d0d12;
+      --bg-panel-dark: rgba(20,20,28,0.85);
+      --text-primary-dark: #e0e0e0;
+      --text-secondary-dark: #a0a0a0;
+      --accent-primary-dark: #00bfff;
+      --accent-hover-dark: #009acd;
+      --border-dark: rgba(255,255,255,0.2);
+    }
+    html[data-theme="light"], body[data-theme="light"] {
+      --bg-base: var(--bg-base-light);
+      --bg-panel: var(--bg-panel-light);
+      --text-primary: var(--text-primary-light);
+      --text-secondary: var(--text-secondary-light);
+      --accent-primary: var(--accent-primary-light);
+      --accent-hover: var(--accent-hover-light);
+      --border-color: var(--border-light);
+    }
+    html[data-theme="dark"], body[data-theme="dark"] {
+      --bg-base: var(--bg-base-dark);
+      --bg-panel: var(--bg-panel-dark);
+      --text-primary: var(--text-primary-dark);
+      --text-secondary: var(--text-secondary-dark);
+      --accent-primary: var(--accent-primary-dark);
+      --accent-hover: var(--accent-hover-dark);
+      --border-color: var(--border-dark);
+    }
+
+    /* Global reset */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      transition: background var(--transition), color var(--transition);
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; transition: color var(--transition); }
+    a:hover { color: var(--accent-hover); }
+    button, input, select, textarea {
+      font-family: var(--font-body);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    /* Animated gradient background */
+    body::before {
+      content: "";
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(135deg,
+        rgba(13,13,18,1),
+        rgba(38,41,51,1),
+        rgba(13,13,18,1));
+      background-size: 300% 300%;
+      animation: bgAnim 30s ease infinite;
+      z-index: -2;
+    }
+    @keyframes bgAnim {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+    body::after {
+      content: "";
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 20px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 20px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Preloader */
+    #preloader {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: var(--bg-base);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2000;
+    }
+    .spinner {
+      width: 3rem; height: 3rem;
+      border: 0.4rem solid rgba(255,255,255,0.2);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Header / Topbar */
+    header.topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 60px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1rem;
+      z-index: 100;
+    }
+    header.topbar .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    header.topbar .brand img {
+      height: 32px;
+    }
+    header.topbar .brand span {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      color: var(--accent-primary);
+    }
+    header.topbar nav {
+      display: flex; gap: 1rem;
+    }
+    header.topbar nav a {
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: background var(--transition), color var(--transition);
+    }
+    header.topbar nav a.active,
+    header.topbar nav a:hover {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+    header.topbar .actions {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    header.topbar .actions button,
+    header.topbar .actions a {
+      background: none; border: none; font-size: 1.2rem;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+    }
+    header.topbar .actions button:hover,
+    header.topbar .actions a:hover {
+      color: var(--accent-primary);
+    }
+
+    /* Main container */
+    main.container {
+      margin-top: 80px; /* below header */
+      padding: 1rem;
+      max-width: 500px;
+      margin-left: auto; margin-right: auto;
+    }
+    .container h1 {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      color: var(--accent-primary);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .container .subheader {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* Form card */
+    .form-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      backdrop-filter: blur(8px);
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .form-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,191,255,0.3);
+    }
+    .form-card h2 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      color: var(--accent-primary);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    /* Form fields */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .form-group input[type="date"],
+    .form-group input[type="number"],
+    .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--bg-base);
+      color: var(--text-primary);
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 4px var(--accent-primary)50;
+    }
+
+    /* Buttons */
+    .btn-submit {
+      display: inline-flex;
+      align-items: center;
+      background: var(--accent-primary);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .btn-submit i {
+      margin-right: 0.4rem;
+    }
+    .btn-submit:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+    .btn-cancel {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 0.5rem;
+      background: transparent;
+      border: 1px solid var(--accent-primary);
+      color: var(--accent-primary);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition), transform var(--transition);
+    }
+    .btn-cancel:hover {
+      background: var(--accent-primary);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    /* Footer */
+    footer.site-footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 2rem;
+    }
+
+    /* Back-to-top */
+    #backToTop {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      width: 2.5rem; height: 2.5rem;
+      background: var(--accent-primary);
+      color: #fff;
+      border-radius: 50%;
+      display: none;
+      align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      transition: background var(--transition), transform var(--transition);
+      z-index: 100;
+    }
+    #backToTop:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Preloader -->
+  <div id="preloader"><div class="spinner"></div></div>
+
+  <!-- Header / Topbar -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="{{ url_for('admin.dashboard') }}" style="display:flex; align-items:center; gap:0.5rem;">
+        <img src="{{ url_for('static', filename='img/hal-logo.png') }}" alt="HAL Logo">
+        <span>HAL Koraput IMS</span>
+      </a>
+    </div>
+    <nav>
+      <a href="{{ url_for('consumption.list_logs') }}">Consumption Logs</a>
+      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+      <!-- Add other nav items if needed -->
+    </nav>
+    <div class="actions">
+      <!-- Theme toggle -->
+      <button id="themeToggle" title="Toggle theme"><i class="fas fa-moon"></i></button>
+      <!-- Maybe logout -->
+      <a href="{{ url_for('auth.logout') }}" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="container">
+    <h1>{{ action }} Consumption Log</h1>
+    <p class="subheader">Fill in the details below.</p>
+
+    <div class="form-card">
+      <h2>{{ action }} Log</h2>
+      <form method="post">
+        <!-- Date -->
+        <div class="form-group">
+          <label for="log_date">Date</label>
+          <input type="date" name="log_date" id="log_date"
+                 value="{{ log.log_date if log else '' }}" required>
+        </div>
+
+        <!-- Item select -->
+        <div class="form-group">
+          <label for="item_id">Item</label>
+          <select name="item_id" id="item_id" required>
+            <option value="" disabled {{ not log and 'selected' }}>-- Select item --</option>
+            {% for it in items %}
+            <option value="{{ it.item_id }}"
+              {% if log and log.item_id == it.item_id %}selected{% endif %}>
+              {{ it.name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Actual Qty -->
+        <div class="form-group">
+          <label for="actual_qty">Actual Qty</label>
+          <input type="number" step="0.01" name="actual_qty" id="actual_qty"
+                 value="{{ log.actual_qty if log else '' }}" required>
+        </div>
+
+        <!-- Expected Qty -->
+        <div class="form-group">
+          <label for="expected_qty">Expected Qty</label>
+          <input type="number" step="0.01" name="expected_qty" id="expected_qty"
+                 value="{{ log.expected_qty if log else '' }}">
+        </div>
+
+        <!-- Submit / Cancel -->
+        <div style="text-align: center; margin-top:1rem;">
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-save"></i> {{ action }}
+          </button>
+          <a href="{{ url_for('consumption.list_logs') }}" class="btn-cancel">
+            <i class="fas fa-times"></i> Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Back-to-top Button -->
+  <div id="backToTop"><i class="fas fa-chevron-up"></i></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    &copy; {{ current_year or "2025" }} Hindustan Aeronautics Ltd. — Koraput Division
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Preloader hide
+    window.addEventListener('load', function(){
+      const pre = document.getElementById('preloader');
+      if(pre){
+        pre.style.opacity = '0';
+        setTimeout(()=> pre.remove(), 300);
+      }
+    });
+
+    // Theme toggle (dark/light)
+    (function(){
+      const docEl = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const icon = btn.querySelector('i');
+      function applyTheme(theme){
+        docEl.setAttribute('data-theme', theme);
+        if(theme==='light'){
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        } else {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        }
+      }
+      const stored = localStorage.getItem('theme');
+      if(stored==='light') applyTheme('light');
+      else applyTheme('dark');
+      btn.addEventListener('click', ()=>{
+        const cur = docEl.getAttribute('data-theme');
+        const next = cur==='light'?'dark':'light';
+        applyTheme(next);
+        localStorage.setItem('theme', next);
+      });
+    })();
+
+    // Back-to-top
+    const backBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', ()=>{
+      if(window.scrollY > 300) backBtn.style.display = 'flex';
+      else backBtn.style.display = 'none';
+    });
+    if(backBtn){
+      backBtn.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
+    }
+  </script>
+</body>
+</html>
